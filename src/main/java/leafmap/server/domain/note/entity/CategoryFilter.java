@@ -41,6 +41,6 @@ public class CategoryFilter extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "category_filter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CategoryChallenge> categoryChallenges = new ArrayList<>();
+    @OneToOne(mappedBy = "categoryFilter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CategoryChallenge categoryChallenge;
 }

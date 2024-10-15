@@ -21,7 +21,7 @@ public class CategoryChallenge {
     @Column(name = "count_stamp")
     private Integer countStamp;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryFilter categoryFilter;
 
