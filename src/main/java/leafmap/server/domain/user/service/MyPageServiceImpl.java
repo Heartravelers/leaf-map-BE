@@ -1,5 +1,6 @@
 package leafmap.server.domain.user.service;
 
+import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.domain.user.entity.User;
@@ -9,6 +10,7 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +39,15 @@ public class MyPageServiceImpl implements MyPageService {
                 user.setBio(profileRequestDto.getBio());
             userRepository.save(user);
             return;
+        }
+        throw new CustomException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    @Override
+    public List<FollowingUserDto> getFollowing(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isPresent()) {
+
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }
