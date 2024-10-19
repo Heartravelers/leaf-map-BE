@@ -28,15 +28,15 @@ public class MyPageController {
     @GetMapping("/mypage")
     public ResponseEntity<ApiResponse<?>> getMyPage(){
         try {
-            MyPageResponseDto myPageResponseDto = myPageService.getMyPage(1L); // 테스트용
+            MyPageResponseDto myPageResponseDto = myPageService.getMyPage(2L); // 테스트용
             if(myPageResponseDto != null) {
                     return ResponseEntity.ok(ApiResponse.onSuccess(myPageResponseDto));
             }
+        } catch (CustomException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCode.USER_NOT_FOUND.getErrorResponse());
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        } return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "프로필 수정")
@@ -47,8 +47,7 @@ public class MyPageController {
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCode.USER_NOT_FOUND.getErrorResponse());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
         }

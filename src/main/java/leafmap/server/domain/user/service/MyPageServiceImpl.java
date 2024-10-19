@@ -19,15 +19,11 @@ public class MyPageServiceImpl implements MyPageService {
 
     @Override
     public MyPageResponseDto getMyPage(Long userId) {
-        try {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if(userOptional.isPresent()) {
-                return new MyPageResponseDto(userOptional.get());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isPresent()) {
+            return new MyPageResponseDto(userOptional.get());
         }
-        return null;
+        throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }
 
     @Override
