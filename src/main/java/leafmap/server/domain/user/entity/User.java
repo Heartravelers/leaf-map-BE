@@ -22,6 +22,7 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private Long id;
 
+    @Setter
     @Column(name = "username")
     private String username;
 
@@ -31,6 +32,7 @@ public class User {
     @Column(name = "profile_picture")
     private String profilePicture;
 
+    @Setter
     @Column(name = "bio")
     private String bio;
 
