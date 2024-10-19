@@ -3,6 +3,7 @@ package leafmap.server.domain.user.service;
 import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
+import leafmap.server.domain.user.dto.ScrapResponseDto;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface MyPageService {
     void patchUpdate(Long userId, ProfileRequestDto profileRequestDto);
 
     List<FollowingUserDto> getFollowing(Long userId);
+
+    List<ScrapResponseDto> getScraps(Long userId);
 }
