@@ -6,7 +6,6 @@ import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.domain.user.dto.ScrapResponseDto;
-import leafmap.server.domain.user.entity.Follow;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MyPageServiceImpl implements MyPageService {
