@@ -6,6 +6,7 @@ import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.domain.user.dto.ScrapResponseDto;
+import leafmap.server.domain.user.entity.Follow;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
@@ -54,7 +55,7 @@ public class MyPageServiceImpl implements MyPageService {
     public List<FollowingUserDto> getFollowing(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
-
+            return userOptional.get().getFollowings().stream().map(FollowingUserDto::new).toList();
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }

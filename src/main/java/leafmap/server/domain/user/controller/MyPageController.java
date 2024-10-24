@@ -2,6 +2,7 @@ package leafmap.server.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.domain.user.dto.ScrapResponseDto;
@@ -60,11 +61,14 @@ public class MyPageController {
     @GetMapping("/mypage/subscribe")
     public ResponseEntity<ApiResponse<?>> getSubscribe() {
         try {
-
+            List<FollowingUserDto> followings = myPageService.getFollowing(1L); // 테스트용
+            return ResponseEntity.ok(ApiResponse.onSuccess(followings));
+        } catch (CustomException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCode.USER_NOT_FOUND.getErrorResponse());
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "스크랩 조회")
@@ -73,7 +77,7 @@ public class MyPageController {
         try {
             List<ScrapResponseDto> scraps = myPageService.getScraps(1L); // 테스트용
             return ResponseEntity.ok(ApiResponse.onSuccess(scraps));
-        }  catch (CustomException e) {
+        } catch (CustomException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCode.USER_NOT_FOUND.getErrorResponse());
         } catch (Exception e) {
             e.printStackTrace();
