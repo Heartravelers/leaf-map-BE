@@ -1,7 +1,7 @@
 package leafmap.server.domain.user.entity;
 
 import jakarta.persistence.*;
-import leafmap.server.domain.challenge.Challenge;
+import leafmap.server.domain.challenge.entity.Challenge;
 import leafmap.server.domain.note.entity.*;
 import leafmap.server.domain.qna.entity.Inquiry;
 import lombok.*;
