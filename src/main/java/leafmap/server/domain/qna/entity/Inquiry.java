@@ -23,6 +23,9 @@ public class Inquiry extends BaseEntity {
     @Column(name = "inquiry_id", nullable = false)
     private Long id;
 
+    @Column(name = "inquiry_title")
+    private String inquiryTitle;
+
     @Column(name = "inquiry_text", columnDefinition = "text")
     private String inquiryText;
 
