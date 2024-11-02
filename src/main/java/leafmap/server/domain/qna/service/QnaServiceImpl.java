@@ -1,6 +1,9 @@
 package leafmap.server.domain.qna.service;
 
+import leafmap.server.domain.qna.dto.InquiryRequestDto;
 import leafmap.server.domain.qna.dto.InquiryResponseDto;
+import leafmap.server.domain.qna.entity.Inquiry;
+import leafmap.server.domain.qna.repository.InquiryRepository;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
@@ -17,8 +20,21 @@ public class QnaServiceImpl implements QnaService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    InquiryRepository inquiryRepository;
+
     @Override
-    public List<InquiryResponseDto> getInquiries(Long userId) {
+    public void save(InquiryRequestDto inquiryRequestDto, Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isPresent()) {
+            inquiryRepository.save(new Inquiry(inquiryRequestDto, userOptional.get()));
+            return;
+        }
+        throw new CustomException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    @Override
+    public List<InquiryResponseDto> findByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             return userOptional.get().getInquiries().stream().map(InquiryResponseDto::new).toList();

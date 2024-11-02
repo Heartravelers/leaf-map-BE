@@ -1,12 +1,11 @@
 package leafmap.server.domain.qna.entity;
 
 import jakarta.persistence.*;
-import leafmap.server.domain.note.entity.NoteImage;
+import leafmap.server.domain.qna.dto.InquiryRequestDto;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +32,21 @@ public class Inquiry extends BaseEntity {
     @Column(name = "status")
     private InquiryStatus status;
 
+    @Column(name = "email")
+    private String email;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers = new ArrayList<>();
+
+    public Inquiry(InquiryRequestDto inquiryRequestDto, User user) {
+        this.inquiryTitle = inquiryRequestDto.getInquiryTitle();
+        this.inquiryText = inquiryRequestDto.getInquiryText();
+        this.status = InquiryStatus.PENDING;
+        this.email = inquiryRequestDto.getEmail();
+        this.user = user;
+    }
 }
