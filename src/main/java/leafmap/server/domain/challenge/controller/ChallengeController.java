@@ -27,7 +27,7 @@ public class ChallengeController {
             ChallengeResponseDto challengeResponseDto = challengeService.getChallenge(1L); // 테스트용
             return ResponseEntity.ok(ApiResponse.onSuccess(challengeResponseDto));
         } catch (CustomException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorCode.USER_NOT_FOUND.getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
