@@ -46,6 +46,11 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
+    public void delete(Inquiry inquiry) {
+        inquiryRepository.delete(inquiry);
+    }
+
+    @Override
     public Inquiry findByInquiryId(Long inquiryId) {
         Optional<Inquiry> inquiryOptional = inquiryRepository.findById(inquiryId);
         if(inquiryOptional.isPresent()) {

@@ -12,6 +12,8 @@ public interface QnaService {
 
     void update(Inquiry inquiry, InquiryRequestDto inquiryRequestDto);
 
+    void delete(Inquiry inquiry);
+
     Inquiry findByInquiryId(Long inquiryId);
 
     List<InquiryResponseDto> findByUserId(Long userId);
