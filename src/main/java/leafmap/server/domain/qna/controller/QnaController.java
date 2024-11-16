@@ -53,6 +53,24 @@ public class QnaController {
         }
     }
 
+    @Operation(summary = "문의 수정")
+    @PatchMapping("/inquiry/{inquiryId}")
+    public ResponseEntity<ApiResponse<?>> updateInquiry(@PathVariable("inquiryId") Long inquiryId,
+                                                        @RequestBody InquiryRequestDto inquiryRequestDto) {
+        try {
+            Long userId = 10L; // 테스트용
+            Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
+            qnaService.validateUser(userId, inquiry);
+            qnaService.update(inquiry, inquiryRequestDto);
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse()); // 403 404
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }
+    }
+
     @Operation(summary = "답변 조회")
     @GetMapping("/inquiry/{inquiryId}")
     public ResponseEntity<ApiResponse<?>> getAnswers(@PathVariable("inquiryId") Long inquiryId) {

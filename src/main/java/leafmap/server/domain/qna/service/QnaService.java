@@ -10,6 +10,8 @@ public interface QnaService {
 
     void save(InquiryRequestDto inquiryRequestDto, Long userId);
 
+    void update(Inquiry inquiry, InquiryRequestDto inquiryRequestDto);
+
     Inquiry findByInquiryId(Long inquiryId);
 
     List<InquiryResponseDto> findByUserId(Long userId);

@@ -34,6 +34,18 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
+    public void update(Inquiry inquiry, InquiryRequestDto inquiryRequestDto) {
+        if(inquiryRequestDto.getInquiryTitle() != null)
+            inquiry.setInquiryTitle(inquiryRequestDto.getInquiryTitle());
+        if(inquiryRequestDto.getInquiryText() != null)
+            inquiry.setInquiryText(inquiryRequestDto.getInquiryText());
+        if(inquiryRequestDto.getEmail() != null)
+            inquiry.setEmail(inquiryRequestDto.getEmail());
+
+        inquiryRepository.save(inquiry);
+    }
+
+    @Override
     public Inquiry findByInquiryId(Long inquiryId) {
         Optional<Inquiry> inquiryOptional = inquiryRepository.findById(inquiryId);
         if(inquiryOptional.isPresent()) {
