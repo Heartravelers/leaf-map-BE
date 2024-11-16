@@ -9,4 +9,6 @@ public class ProfileRequestDto {
 
     private String bio;
 
+    private Boolean isPublic;
+
 }

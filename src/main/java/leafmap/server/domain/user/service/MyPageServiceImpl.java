@@ -43,6 +43,8 @@ public class MyPageServiceImpl implements MyPageService {
                 user.setUsername(profileRequestDto.getUsername());
             if(profileRequestDto.getBio() != null)
                 user.setBio(profileRequestDto.getBio());
+            if(profileRequestDto.getIsPublic() != null)
+                user.setPublic(profileRequestDto.getIsPublic());
             userRepository.save(user);
             return;
         }

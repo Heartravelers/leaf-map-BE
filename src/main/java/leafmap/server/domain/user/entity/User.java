@@ -40,6 +40,10 @@ public class User {
     @Column(name = "provider")
     private Provider provider;
 
+    @Setter
+    @Column(name = "is_public")
+    private boolean isPublic;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Note> notes = new ArrayList<>();
 

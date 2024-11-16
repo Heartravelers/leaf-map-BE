@@ -14,11 +14,14 @@ public class MyPageResponseDto {
 
     private String bio;
 
+    private boolean isPublic;
+
     public MyPageResponseDto(User user) {
         this.username = user.getUsername();
         this.image = user.getProfilePicture();
         this.email = user.getEmail();
         this.bio = user.getBio();
+        this.isPublic = user.isPublic();
     }
 
 }
