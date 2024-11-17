@@ -9,7 +9,7 @@ public interface NoteService {
     NoteDto getUserNote(Long noteId);
 
     //노트 생성
-    void postNote(NoteDto noteDto);
+    void postNote(Long userID, NoteDto noteDto);
     //노트 수정
     void updateNote(Long noteId, NoteDto noteDto);
     //노트 삭제

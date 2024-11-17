@@ -12,8 +12,8 @@ public class CustomException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    public static class NotFoundEntityException extends CustomException {
-        public NotFoundEntityException(ErrorResponseCode errorCode) {
+    public static class NotFoundNoteException extends CustomException {
+        public NotFoundNoteException(ErrorResponseCode errorCode) {
             super(errorCode);
         }
     }

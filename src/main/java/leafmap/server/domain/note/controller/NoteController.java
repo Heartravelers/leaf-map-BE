@@ -45,7 +45,7 @@ public class NoteController {
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch(CustomException.NotFoundEntityException e){   //note 존재하지 않음
+        catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch(CustomException.ForbiddenException e){    //노트가 공개인지
@@ -56,37 +56,34 @@ public class NoteController {
 
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
-    public ResponseEntity<ApiResponse<?>> postNote(@Valid @RequestBody NoteDto noteDto){
+    public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader String token,
+                                                   @Valid @RequestBody NoteDto noteDto){
         try {
-            noteService.postNote(noteDto);
+            //token 에서 userId 추출
+            noteService.postNote(userId, noteDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+        }
+        catch(CustomException.NotFoundUserException e){
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "노트 수정")
     @PutMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> updateNote(@PathVariable Long noteId,
+    public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader String token,
+                                                     @PathVariable Long noteId,
                                                      @Valid @RequestBody NoteDto noteDto){
         try {
-            //노트 존재 여부 확인
+            if () { //본인이 아닌 경우 getToken != note userId
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorCode.FORBIDDEN.getErrorResponse());
+            }
             noteService.updateNote(noteId, noteDto);
-            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
-            //반환형식 컨벤션 맞추기(그냥 200으로 할지 NOTE200으로 할지 등도/일단 메세지는 없애자)
+            return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
         }
-        catch(Exception e){
-            //권한 없음
+        catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch(Exception e){
-            //note 존재하지 않음
-        }
-        catch(Exception e){
-            //노트가 공개인지
-        }
-        catch(Exception e){
-            //nullable 불가가 null 값
-        }
-
     }
 
     @Operation(summary = "노트 삭제")
