@@ -3,7 +3,6 @@ package leafmap.server.domain.note.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.NoteDto;
-import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 public class NoteController {
@@ -88,20 +85,17 @@ public class NoteController {
 
     @Operation(summary = "노트 삭제")
     @DeleteMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> deleteNote(@PathVariable Long noteId){
-        try{
+    public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader String token,
+                                                     @PathVariable Long noteId) {
+        try {
+            if () { //본인이 아닌 경우 getToken != note userId
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorCode.FORBIDDEN.getErrorResponse());
+            }
             noteService.deleteNote(noteId);
-            //if와 예외처리와 return
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+        } catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch(Exception e){
-            //권한 없음
-        }
-        catch (Exception e){
-            //note 존재하지 않음
-        }
-
     }
-
-
 
 }

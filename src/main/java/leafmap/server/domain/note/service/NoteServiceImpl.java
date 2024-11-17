@@ -1,6 +1,5 @@
 package leafmap.server.domain.note.service;
 
-import leafmap.server.domain.note.dto.NoteRequestDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.repository.NoteRepository;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import static javax.swing.text.rtf.RTFAttributes.BooleanAttribute.False;
 
 @Service
 public class NoteServiceImpl implements NoteService{
@@ -127,8 +124,10 @@ public class NoteServiceImpl implements NoteService{
     }
     @Override   //노트 삭제
     public void deleteNote(Long noteId){
+        Optional<Note> optionalNote = noteRepository.findById(noteId);
+        if (optionalNote.isEmpty()){
+            throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
+        }
         noteRepository.deleteById(noteId);
     }
-
-
 }
