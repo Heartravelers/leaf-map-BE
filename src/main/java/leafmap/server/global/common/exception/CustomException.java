@@ -30,6 +30,9 @@ public class CustomException extends RuntimeException {
         }
     }
 
-
-
+    public static class NotFoundPlaceException extends CustomException {
+        public NotFoundPlaceException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
 }

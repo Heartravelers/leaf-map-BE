@@ -81,8 +81,11 @@ public class NoteServiceImpl implements NoteService{
 
     @Override   //노트 생성
     public void postNote(NoteDto noteDto){
-        Place place = placeRepository.getOneByNameAndAddress(noteDto.getPlaceName(),noteDto.getAddress());
-        //위에꺼 장소 검색하는 api 따로 필요하면 그거 불러오기
+        Optional<Place> optionalPlace = placeRepository.findById(noteDto.getPlaceId());
+        if (optionalPlace.isEmpty()){
+            placeRepository.save(optionalPlace.get());
+        } //**place 가 db에 없으면 추가하라는건데 place 정보 관리를 어떻게 하는건지 재확인 필요
+
         Note note = Note.builder()
                 .title(noteDto.getTitle())
                 .date(noteDto.getDate())
@@ -90,7 +93,7 @@ public class NoteServiceImpl implements NoteService{
                 .isPublic(noteDto.getIsPublic())
                 .noteImages(noteDto.getNoteImages())
                 .categoryFilter(noteDto.getCategoryFilter())
-                .place(place).build();
+                .place(optionalPlace.get()).build();
         noteRepository.save(note);
     }
     @Override   //노트 수정

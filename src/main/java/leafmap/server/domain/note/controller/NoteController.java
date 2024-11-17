@@ -61,13 +61,7 @@ public class NoteController {
             noteService.postNote(noteDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
-        catch(Exception e){
-            //권한 없음
-        }
-        catch(Exception e){
-            //nullable 불가가 null 값
-        }
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "노트 수정")
