@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static javax.swing.text.rtf.RTFAttributes.BooleanAttribute.False;
+
 @Service
 public class NoteServiceImpl implements NoteService{
     private NoteRepository noteRepository;
@@ -31,7 +33,7 @@ public class NoteServiceImpl implements NoteService{
     public NoteDto getMyNote(Long noteId){
         Optional<Note> optionalNote = noteRepository.findById(noteId);
         if (optionalNote.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundEntityException(ErrorCode.NOT_FOUND);
         }
         Note note = optionalNote.get();
         noteDto.builder()
@@ -51,12 +53,15 @@ public class NoteServiceImpl implements NoteService{
     public NoteDto getUserNote(Long noteId){
         Optional<Note> optionalNote = noteRepository.findById(noteId);
         if (optionalNote.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundEntityException(ErrorCode.NOT_FOUND);
         }
         Note note = optionalNote.get();
         Optional<User> optionalUser = noteRepository.findByNoteId(noteId);
         if (optionalUser.isEmpty()) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
+        }
+        if (note.getIsPublic() == false){
+            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
         noteDto.builder()
                 .userId(note.getUser().getId())
@@ -71,10 +76,6 @@ public class NoteServiceImpl implements NoteService{
                 .categoryFilter(note.getCategoryFilter())
                 .countHeart(note.getCountHeart());
         return noteDto;
-
-        throw
-        //throw 해당노트 없음
-        //throw 해당 노트 공개인지
     }
 
 

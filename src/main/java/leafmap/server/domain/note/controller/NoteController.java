@@ -6,8 +6,11 @@ import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
+import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.SuccessCode;
+import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,28 +30,28 @@ public class NoteController {
 
     @Operation(summary = "노트 상세 조회")
     @GetMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable Long noteId){
+    public ResponseEntity<ApiResponse<?>> getNote(@RequestHeader String token,
+                                                  @PathVariable Long noteId){
         try{
-            //본인 글이면 getMyNote() 다른사용자면 getUserNote()
-            //본인에 대한 권한 없음->return 오류
-            if (//본인 글){
+            if (){ //본인 글
                 NoteDto noteDto = noteService.getMyNote(noteId);
                 return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
             }
-            else{
+            else{ //다른 사용자 글
                 NoteDto noteDto = noteService.getUserNote(noteId);
                 return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
             }
         }
-        catch(Exception e){
-            //유저 없음
+        catch(CustomException.NotFoundUserException e){    //유저 없음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch(Exception e){
-            //note 존재하지 않음
+        catch(CustomException.NotFoundEntityException e){   //note 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch(Exception e){
-            //노트가 공개인지
+        catch(CustomException.ForbiddenException e){    //노트가 공개인지
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "노트 생성")
