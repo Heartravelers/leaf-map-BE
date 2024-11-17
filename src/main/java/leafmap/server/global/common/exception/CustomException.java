@@ -36,6 +36,12 @@ public class CustomException extends RuntimeException {
         }
     }
 
+    public static class NotFoundCategoryException extends CustomException {
+        public NotFoundCategoryException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
     public static class BadRequestException extends CustomException {
         public BadRequestException(ErrorResponseCode errorCode) {
             super(errorCode);

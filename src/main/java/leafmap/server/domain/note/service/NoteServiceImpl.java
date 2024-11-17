@@ -1,7 +1,10 @@
 package leafmap.server.domain.note.service;
 
+import leafmap.server.domain.note.dto.ListDto;
 import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
+import leafmap.server.domain.note.repository.CategoryRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.place.entity.Place;
 import leafmap.server.domain.place.repository.PlaceRepository;
@@ -12,6 +15,7 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,10 +23,13 @@ public class NoteServiceImpl implements NoteService{
     private NoteRepository noteRepository;
     private PlaceRepository placeRepository;
     private UserRepository userRepository;
+    private CategoryRepository categoryRepository;
     private NoteDto noteDto;
 
     @Autowired
-    public NoteServiceImpl(NoteRepository noteRepository, PlaceRepository placeRepository, UserRepository userRepository, NoteDto noteDto){
+    public NoteServiceImpl(NoteRepository noteRepository, PlaceRepository placeRepository,
+                           UserRepository userRepository, CategoryRepository categoryRepository,
+                           NoteDto noteDto){
         this.noteRepository = noteRepository;
         this.placeRepository = placeRepository;
         this.userRepository = userRepository;
@@ -129,5 +136,19 @@ public class NoteServiceImpl implements NoteService{
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
         }
         noteRepository.deleteById(noteId);
+    }
+
+    @Override    //폴더 내 노트목록 조회(타사용자)
+    public List<NoteDto> getList(Long userId, String categoryName){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()){
+            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+        }
+        Optional<CategoryFilter> optionalCategory = categoryRepository.findByCategoryName(categoryName);
+        if (optionalCategory.isEmpty()){
+            throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
+        }
+
+        return noteRepository.findByUserIdAndCategory(userId, categoryName);
     }
 }

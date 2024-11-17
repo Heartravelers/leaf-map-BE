@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class NoteController {
     private NoteServiceImpl noteService;
@@ -93,10 +95,45 @@ public class NoteController {
             }
             noteService.deleteNote(noteId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
-        } catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
+        }
+        catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
+    @Operation(summary = "폴더 내 노트목록 조회(본인)")
+    @GetMapping("/notelist/mine/{category}")
+    public ResponseEntity<ApiResponse<?>> getMyNoteList(@RequestHeader String token,
+                                                        @PathVariable String category) {
+        try {
+            //token 에서 userId 추출
+            List<NoteDto> notes = noteService.getList(userId, category);
+            return ResponseEntity.ok(ApiResponse.onSuccess(notes));
+        }
+        catch(CustomException.NotFoundUserException e){    //유저 없음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
+                return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+    }
+
+    @Operation(summary = "폴더 내 노트목록 조회(타사용자)")
+    @GetMapping("/notelist/{userId}/{category}")
+    public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable Long userId,
+                                                          @PathVariable String category) {
+        try {
+            List<NoteDto> notes = noteService.getList(userId, category);
+            return ResponseEntity.ok(ApiResponse.onSuccess(notes));
+        }
+        catch(CustomException.NotFoundUserException e){    //유저 없음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+    }
 }
