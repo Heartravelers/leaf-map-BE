@@ -1,6 +1,7 @@
 package leafmap.server.domain.note.entity;
 
 import jakarta.persistence.*;
+import leafmap.server.domain.note.entity.Note;
 import leafmap.server.global.common.BaseEntity;
 import lombok.*;
 

@@ -1,12 +1,10 @@
 package leafmap.server.domain.qna.entity;
 
 import jakarta.persistence.*;
-import leafmap.server.domain.note.entity.NoteImage;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
