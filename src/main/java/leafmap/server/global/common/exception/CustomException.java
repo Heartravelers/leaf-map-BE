@@ -35,4 +35,10 @@ public class CustomException extends RuntimeException {
             super(errorCode);
         }
     }
+
+    public static class BadRequestException extends CustomException {
+        public BadRequestException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
 }

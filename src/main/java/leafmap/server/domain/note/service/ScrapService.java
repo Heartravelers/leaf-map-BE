@@ -1,6 +1,6 @@
 package leafmap.server.domain.note.service;
 
 public interface ScrapService {
-    void makeScrap(Long noteId);
-    void deleteScrap(Long noteId);
+    void makeScrap(Long userId, Long noteId);
+    void deleteScrap(Long userId, Long noteId);
 }

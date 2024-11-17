@@ -62,4 +62,12 @@ public class Note extends BaseEntity {
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Scrap> scraps = new ArrayList<>();
+
+    public void increaseHeart() { // makeScrap 에서 사용
+        this.countHeart++;
+    }
+
+    public void decreaseHeart() { // deleteScrap 에서 사용
+        this.countHeart--;
+    }
 }

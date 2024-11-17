@@ -1,6 +1,5 @@
 package leafmap.server.domain.note.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
@@ -76,11 +75,12 @@ public class NoteController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorCode.FORBIDDEN.getErrorResponse());
             }
             noteService.updateNote(noteId, noteDto);
-            return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
     @Operation(summary = "노트 삭제")
@@ -96,6 +96,7 @@ public class NoteController {
         } catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
     }
 
 }
