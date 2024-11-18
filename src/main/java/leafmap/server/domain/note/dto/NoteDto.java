@@ -27,37 +27,4 @@ public class NoteDto {
     private String address;
     private Integer countHeart;
     private CategoryFilter categoryFilter;
-
-    //response dto 생성자
-    public NoteDto(Long placeId, Long userId, String profilePicture,
-                   String title, LocalDate date, String content,
-                   List<NoteImage> noteImages, String placeName,
-                   String address, Integer countHeart, CategoryFilter categoryFilter){
-
-        this.placeId = placeId;
-        this.userId = userId;
-        this.profilePicture = profilePicture;
-        this.title = title;
-        this.date = date;
-        this.content = content;
-        this.noteImages = noteImages;
-        this.placeName = placeName;
-        this.address = address;
-        this.countHeart = countHeart;
-    }
-
-    //request dto 생성자
-    public NoteDto(String title, LocalDate date, String content, Boolean isPublic,
-                          List<NoteImage> noteImages, CategoryFilter categoryFilter,
-                          String placeName, String address){
-        this.title = title;
-        this.date = date;
-        this.content = content;
-        this.isPublic = isPublic;
-        this.noteImages = noteImages;
-        this.categoryFilter = categoryFilter;
-        this.placeName = placeName;
-        this.address = address;
-    }
-
 }
