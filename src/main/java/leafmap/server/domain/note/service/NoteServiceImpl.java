@@ -138,7 +138,7 @@ public class NoteServiceImpl implements NoteService{
         noteRepository.deleteById(noteId);
     }
 
-    @Override    //폴더 내 노트목록 조회(타사용자)
+    @Override    //폴더 내 노트목록 조회
     public List<NoteDto> getList(Long userId, String categoryName){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
