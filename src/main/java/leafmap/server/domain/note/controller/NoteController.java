@@ -1,5 +1,6 @@
 package leafmap.server.domain.note.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;

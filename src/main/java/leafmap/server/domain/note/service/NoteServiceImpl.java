@@ -1,6 +1,5 @@
 package leafmap.server.domain.note.service;
 
-import leafmap.server.domain.note.dto.ListDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;

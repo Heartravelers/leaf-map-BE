@@ -1,5 +1,6 @@
 package leafmap.server.domain.note.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.domain.note.service.ScrapServiceImpl;
 import leafmap.server.global.common.ApiResponse;

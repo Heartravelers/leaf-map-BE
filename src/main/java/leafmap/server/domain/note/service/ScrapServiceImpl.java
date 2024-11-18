@@ -77,5 +77,4 @@ public class ScrapServiceImpl implements ScrapService{
 
         scrapRepository.deleteById(noteId);
     }
-    }
 }
