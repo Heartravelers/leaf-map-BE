@@ -11,11 +11,16 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class QnaServiceImpl implements QnaService {
+
+    public static final LocalDateTime MIN_DATE_TIME = LocalDateTime.parse("2024-01-01T00:00:00");
+
+    public static final LocalDateTime MAX_DATE_TIME = LocalDateTime.parse("3000-01-01T00:00:00");
 
     @Autowired
     UserRepository userRepository;
@@ -60,10 +65,23 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public List<InquiryResponseDto> findByUserId(Long userId) {
+    public List<InquiryResponseDto> findAllByUserId(Long userId, String startDate, String endDate) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
-            return userOptional.get().getInquiries().stream().map(InquiryResponseDto::new).toList();
+            LocalDateTime start, end;
+            if(startDate == null) {
+                start = MIN_DATE_TIME;
+            } else {
+                start = LocalDateTime.parse(startDate + "T00:00:00");
+            }
+            if(endDate == null) {
+                end = MAX_DATE_TIME;
+            } else {
+                end = LocalDateTime.parse(endDate + "T23:59:59");
+            }
+
+            List<Inquiry> inquiries = inquiryRepository.findByUserAndCreatedAtBetween(userOptional.get(), start, end);
+            return inquiries.stream().map(InquiryResponseDto::new).toList();
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }

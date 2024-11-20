@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -41,12 +42,15 @@ public class QnaController {
 
     @Operation(summary = "문의 내역 조회")
     @GetMapping("/inquiry")
-    public ResponseEntity<ApiResponse<?>> getInquiries() {
+    public ResponseEntity<ApiResponse<?>> getInquiries(@RequestParam(required = false) String startDate,
+                                                       @RequestParam(required = false) String endDate) {
         try {
-            List<InquiryResponseDto> inquiries = qnaService.findByUserId(1L); // 테스트용
+            List<InquiryResponseDto> inquiries = qnaService.findAllByUserId(1L, startDate, endDate); // 테스트용
             return ResponseEntity.ok(ApiResponse.onSuccess(inquiries));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        } catch(DateTimeParseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorCode.BAD_REQUEST.getErrorResponse());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());

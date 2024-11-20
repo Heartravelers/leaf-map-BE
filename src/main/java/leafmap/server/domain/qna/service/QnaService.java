@@ -16,7 +16,7 @@ public interface QnaService {
 
     Inquiry findByInquiryId(Long inquiryId);
 
-    List<InquiryResponseDto> findByUserId(Long userId);
+    List<InquiryResponseDto> findAllByUserId(Long userId, String startDate, String endDate);
 
     void validateUser(Long userId, Inquiry inquiry);
 
