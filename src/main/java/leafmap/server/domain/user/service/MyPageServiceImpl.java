@@ -6,6 +6,7 @@ import leafmap.server.domain.user.dto.FollowingUserDto;
 import leafmap.server.domain.user.dto.MyPageResponseDto;
 import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.domain.user.dto.ScrapResponseDto;
+import leafmap.server.domain.user.entity.Follow;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
@@ -13,6 +14,7 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +57,14 @@ public class MyPageServiceImpl implements MyPageService {
     public List<FollowingUserDto> getFollowing(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
-            return userOptional.get().getFollowings().stream().map(FollowingUserDto::new).toList();
+            List<Follow> followings = userOptional.get().getFollowings();
+            List<FollowingUserDto> result = new ArrayList<>();
+            for(Follow follow : followings) {
+                if(follow.getFollowing().isPublic()) {
+                    result.add(new FollowingUserDto(follow));
+                }
+            }
+            return result;
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }
