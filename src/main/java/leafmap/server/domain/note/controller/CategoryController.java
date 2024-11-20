@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.service.CategoryServiceImpl;
 import leafmap.server.global.common.ApiResponse;
+import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.SuccessCode;
 import leafmap.server.global.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,8 @@ public class CategoryController {
         catch(CustomException.NotFoundUserException e){
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }
     }
 }

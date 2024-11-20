@@ -1,7 +1,6 @@
 package leafmap.server.domain.note.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.domain.note.service.ScrapServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -17,8 +16,8 @@ public class ScrapController {
     private ScrapServiceImpl scrapService;
 
     @Autowired
-    private ScrapController(NoteServiceImpl noteService){
-        this.noteService = noteService;
+    private ScrapController(ScrapServiceImpl scrapService){
+        this.scrapService = scrapService;
     }
 
     @Operation(summary = "하트 추가 및 스크랩")
@@ -39,8 +38,9 @@ public class ScrapController {
         catch(CustomException.NotFoundUserException e){   //user 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-    }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }    }
 
     @Operation(summary = "하트 삭제 및 스크랩 취소")
     @DeleteMapping({"/note/{noteId}", "/note/{noteId}/scrap"})
@@ -62,6 +62,7 @@ public class ScrapController {
         catch(CustomException.NotFoundUserException e){   //user 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-    }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }    }
 }

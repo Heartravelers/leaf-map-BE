@@ -24,9 +24,6 @@ public class NoteController {
         this.noteService = noteService;
     }
 
-    //모든 crud 에 대해 본인 글인지를 체크해야 함(jwt 토큰 체크)
-    //반환형식 컨벤션 맞추기(그냥 200으로 할지 NOTE200으로 할지 등도/일단 메세지는 없애자)
-
     @Operation(summary = "노트 상세 조회")
     @GetMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> getNote(@RequestHeader String token,
@@ -50,8 +47,9 @@ public class NoteController {
         catch(CustomException.ForbiddenException e){    //노트가 공개인지
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-    }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }    }
 
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
@@ -65,8 +63,9 @@ public class NoteController {
         catch(CustomException.NotFoundUserException e){
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-    }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }    }
 
     @Operation(summary = "노트 수정")
     @PutMapping("/note/{noteId}")
@@ -83,8 +82,9 @@ public class NoteController {
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-    }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }    }
 
     @Operation(summary = "노트 삭제")
     @DeleteMapping("/note/{noteId}")
@@ -100,7 +100,9 @@ public class NoteController {
         catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }
     }
 
     @Operation(summary = "폴더 내 노트목록 조회")
@@ -117,6 +119,8 @@ public class NoteController {
         catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }
     }
 }
