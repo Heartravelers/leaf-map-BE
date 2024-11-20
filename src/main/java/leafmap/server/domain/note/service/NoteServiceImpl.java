@@ -89,7 +89,7 @@ public class NoteServiceImpl implements NoteService{
     public void postNote(Long userId, NoteDto noteDto){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
         Optional<Place> optionalPlace = placeRepository.findById(noteDto.getPlaceId());
         if (optionalPlace.isEmpty()){
@@ -141,7 +141,7 @@ public class NoteServiceImpl implements NoteService{
     public List<NoteDto> getList(Long userId, String categoryName){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
         Optional<CategoryFilter> optionalCategory = categoryRepository.findByCategoryName(categoryName);
         if (optionalCategory.isEmpty()){

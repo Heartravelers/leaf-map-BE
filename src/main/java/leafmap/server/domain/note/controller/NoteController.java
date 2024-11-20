@@ -58,7 +58,7 @@ public class NoteController {
         try {
             //token 에서 userId 추출
             noteService.postNote(userId, noteDto);
-            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

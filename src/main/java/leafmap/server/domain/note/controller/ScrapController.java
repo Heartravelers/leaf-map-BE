@@ -27,7 +27,7 @@ public class ScrapController {
         try{
             //token 에서 userId 추출
             scrapService.makeScrap(userId, noteId);
-            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

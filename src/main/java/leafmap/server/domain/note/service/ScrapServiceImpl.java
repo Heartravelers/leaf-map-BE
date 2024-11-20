@@ -41,7 +41,7 @@ public class ScrapServiceImpl implements ScrapService{
         }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
         note.increaseHeart();
@@ -69,7 +69,7 @@ public class ScrapServiceImpl implements ScrapService{
         }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
         note.decreaseHeart();

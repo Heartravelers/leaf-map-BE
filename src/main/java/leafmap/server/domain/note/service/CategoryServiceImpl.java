@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService{
     public void makeOwnCategory(Long userId, CategoryDto categoryDto){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
         CategoryFilter categoryFilter = CategoryFilter.builder()
