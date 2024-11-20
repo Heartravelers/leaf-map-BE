@@ -28,9 +28,11 @@ public class QnaController {
 
     @Operation(summary = "문의하기")
     @PostMapping("/inquiry")
-    public ResponseEntity<ApiResponse<?>> createInquiry(@RequestBody InquiryRequestDto inquiryRequestDto){
+    public ResponseEntity<ApiResponse<?>> createInquiry(@RequestBody InquiryRequestDto inquiryRequestDto,
+                                                        @RequestHeader("Authorization") String authorization){
         try {
-            qnaService.save(inquiryRequestDto, 1L); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            qnaService.save(inquiryRequestDto, userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -43,9 +45,11 @@ public class QnaController {
     @Operation(summary = "문의 내역 조회")
     @GetMapping("/inquiry")
     public ResponseEntity<ApiResponse<?>> getInquiries(@RequestParam(required = false) String startDate,
-                                                       @RequestParam(required = false) String endDate) {
+                                                       @RequestParam(required = false) String endDate,
+                                                       @RequestHeader("Authorization") String authorization) {
         try {
-            List<InquiryResponseDto> inquiries = qnaService.findAllByUserId(1L, startDate, endDate); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            List<InquiryResponseDto> inquiries = qnaService.findAllByUserId(userId, startDate, endDate);
             return ResponseEntity.ok(ApiResponse.onSuccess(inquiries));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -60,9 +64,10 @@ public class QnaController {
     @Operation(summary = "문의 수정")
     @PatchMapping("/inquiry/{inquiryId}")
     public ResponseEntity<ApiResponse<?>> updateInquiry(@PathVariable("inquiryId") Long inquiryId,
-                                                        @RequestBody InquiryRequestDto inquiryRequestDto) {
+                                                        @RequestBody InquiryRequestDto inquiryRequestDto,
+                                                        @RequestHeader("Authorization") String authorization) {
         try {
-            Long userId = 1L; // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
             Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
             qnaService.validateUser(userId, inquiry);
             qnaService.update(inquiry, inquiryRequestDto);
@@ -77,9 +82,10 @@ public class QnaController {
 
     @Operation(summary = "문의 삭제")
     @DeleteMapping("/inquiry/{inquiryId}")
-    public ResponseEntity<ApiResponse<?>> deleteInquiry(@PathVariable("inquiryId") Long inquiryId) {
+    public ResponseEntity<ApiResponse<?>> deleteInquiry(@PathVariable("inquiryId") Long inquiryId,
+                                                        @RequestHeader("Authorization") String authorization) {
         try {
-            Long userId = 1L; // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
             Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
             qnaService.validateUser(userId, inquiry);
             qnaService.delete(inquiry);
@@ -94,10 +100,12 @@ public class QnaController {
 
     @Operation(summary = "답변 조회")
     @GetMapping("/inquiry/{inquiryId}")
-    public ResponseEntity<ApiResponse<?>> getAnswers(@PathVariable("inquiryId") Long inquiryId) {
+    public ResponseEntity<ApiResponse<?>> getAnswers(@PathVariable("inquiryId") Long inquiryId,
+                                                     @RequestHeader("Authorization") String authorization) {
         try {
+            Long userId = Long.parseLong(authorization); // 테스트용
             Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
-            qnaService.validateUser(1L, inquiry); // 테스트용
+            qnaService.validateUser(userId, inquiry);
             List<AnswerResponseDto> answers = inquiry.getAnswers().stream().map(AnswerResponseDto::new).toList();
             return ResponseEntity.ok(ApiResponse.onSuccess(answers));
         } catch (CustomException e) {

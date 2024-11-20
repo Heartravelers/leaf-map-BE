@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,9 +23,10 @@ public class ChallengeController {
 
     @Operation(summary = "챌린지(스탬프) 조회")
     @GetMapping("/challenge")
-    public ResponseEntity<ApiResponse<?>> getChallenge() {
+    public ResponseEntity<ApiResponse<?>> getChallenge(@RequestHeader("Authorization") String authorization) {
         try {
-            ChallengeResponseDto challengeResponseDto = challengeService.getChallenge(1L); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            ChallengeResponseDto challengeResponseDto = challengeService.getChallenge(userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(challengeResponseDto));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

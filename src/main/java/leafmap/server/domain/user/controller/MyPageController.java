@@ -14,10 +14,8 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,9 +28,10 @@ public class MyPageController {
 
     @Operation(summary = "마이페이지 조회")
     @GetMapping("/mypage")
-    public ResponseEntity<ApiResponse<?>> getMyPage(){
+    public ResponseEntity<ApiResponse<?>> getMyPage(@RequestHeader("Authorization") String authorization){
         try {
-            MyPageResponseDto myPageResponseDto = myPageService.getMyPage(1L); // 테스트용
+            Long userId = Long.parseLong(authorization);  // 테스트용
+            MyPageResponseDto myPageResponseDto = myPageService.getMyPage(userId);
             if(myPageResponseDto != null) {
                     return ResponseEntity.ok(ApiResponse.onSuccess(myPageResponseDto));
             }
@@ -45,9 +44,11 @@ public class MyPageController {
 
     @Operation(summary = "프로필 수정")
     @PatchMapping("/mypage/edit")
-    public ResponseEntity<ApiResponse<?>> updateProfile(@RequestBody ProfileRequestDto profileRequestDto){
+    public ResponseEntity<ApiResponse<?>> updateProfile(@RequestBody ProfileRequestDto profileRequestDto,
+                                                        @RequestHeader("Authorization") String authorization){
         try {
-            myPageService.patchUpdate(1L, profileRequestDto); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            myPageService.patchUpdate(userId, profileRequestDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -59,9 +60,10 @@ public class MyPageController {
 
     @Operation(summary = "구독한 사용자 조회")
     @GetMapping("/mypage/subscribe")
-    public ResponseEntity<ApiResponse<?>> getSubscribe() {
+    public ResponseEntity<ApiResponse<?>> getSubscribe(@RequestHeader("Authorization") String authorization) {
         try {
-            List<FollowingUserDto> followings = myPageService.getFollowing(1L); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            List<FollowingUserDto> followings = myPageService.getFollowing(userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(followings));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -73,9 +75,10 @@ public class MyPageController {
 
     @Operation(summary = "스크랩 조회")
     @GetMapping("/mypage/scraps")
-    public ResponseEntity<ApiResponse<?>> getScraps() {
+    public ResponseEntity<ApiResponse<?>> getScraps(@RequestHeader("Authorization") String authorization) {
         try {
-            List<ScrapResponseDto> scraps = myPageService.getScraps(1L); // 테스트용
+            Long userId = Long.parseLong(authorization); // 테스트용
+            List<ScrapResponseDto> scraps = myPageService.getScraps(userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(scraps));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
