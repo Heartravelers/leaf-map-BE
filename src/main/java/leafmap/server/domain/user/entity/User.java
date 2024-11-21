@@ -29,6 +29,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Setter
     @Column(name = "profile_picture")
     private String profilePicture;
 

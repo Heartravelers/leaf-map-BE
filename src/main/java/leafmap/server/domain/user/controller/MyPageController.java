@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,11 +45,12 @@ public class MyPageController {
 
     @Operation(summary = "프로필 수정")
     @PatchMapping("/mypage/edit")
-    public ResponseEntity<ApiResponse<?>> updateProfile(@RequestBody ProfileRequestDto profileRequestDto,
+    public ResponseEntity<ApiResponse<?>> updateProfile(@RequestPart(value = "data", required = false) ProfileRequestDto profileRequestDto,
+                                                        @RequestPart(value = "file", required = false) MultipartFile file,
                                                         @RequestHeader("Authorization") String authorization){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            myPageService.patchUpdate(userId, profileRequestDto);
+            myPageService.patchUpdate(userId, profileRequestDto, file);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
