@@ -49,12 +49,14 @@ public class MyPageServiceImpl implements MyPageService {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            if(profileRequestDto.getUsername() != null)
-                user.setUsername(profileRequestDto.getUsername());
-            if(profileRequestDto.getBio() != null)
-                user.setBio(profileRequestDto.getBio());
-            if(profileRequestDto.getIsPublic() != null)
-                user.setPublic(profileRequestDto.getIsPublic());
+            if(profileRequestDto != null) {
+                if(profileRequestDto.getUsername() != null)
+                    user.setUsername(profileRequestDto.getUsername());
+                if(profileRequestDto.getBio() != null)
+                    user.setBio(profileRequestDto.getBio());
+                if(profileRequestDto.getIsPublic() != null)
+                    user.setPublic(profileRequestDto.getIsPublic());
+            }
             if(file != null && !file.isEmpty()){
                 String url = s3Provider.uploadFile(file, new S3UploadRequest(userId, DIR_NAME));
                 if(user.getProfilePicture() != null) {
