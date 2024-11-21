@@ -60,6 +60,21 @@ public class MyPageController {
         }
     }
 
+    @Operation(summary = "프로필 이미지 삭제")
+    @DeleteMapping("/mypage/edit/image")
+    public ResponseEntity<ApiResponse<?>> deleteProfileImage(@RequestHeader("Authorization") String authorization) {
+        try {
+            Long userId = Long.parseLong(authorization); // 테스트용
+            myPageService.deleteProfileImage(userId);
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        }
+    }
+
     @Operation(summary = "구독한 사용자 조회")
     @GetMapping("/mypage/subscribe")
     public ResponseEntity<ApiResponse<?>> getSubscribe(@RequestHeader("Authorization") String authorization) {

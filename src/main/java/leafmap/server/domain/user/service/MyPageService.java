@@ -14,6 +14,8 @@ public interface MyPageService {
 
     void patchUpdate(Long userId, ProfileRequestDto profileRequestDto, MultipartFile file);
 
+    void deleteProfileImage(Long userId);
+
     List<FollowingUserDto> getFollowing(Long userId);
 
     List<ScrapResponseDto> getScraps(Long userId);
