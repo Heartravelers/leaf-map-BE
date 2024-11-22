@@ -86,7 +86,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public List<FollowingUserDto> getFollowing(Long userId) {
+    public List<FollowingUserDto> findAllFollowingsByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             List<Follow> followings = userOptional.get().getFollowings();
@@ -102,7 +102,7 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public List<ScrapResponseDto> getScraps(Long userId) {
+    public List<ScrapResponseDto> findAllScrapsByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             List<Scrap> scraps = scrapRepository.findAllByUser(userOptional.get());

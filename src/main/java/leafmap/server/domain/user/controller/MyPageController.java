@@ -79,7 +79,7 @@ public class MyPageController {
     public ResponseEntity<ApiResponse<?>> getSubscribe(@RequestHeader("Authorization") String authorization) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            List<FollowingUserDto> followings = myPageService.getFollowing(userId);
+            List<FollowingUserDto> followings = myPageService.findAllFollowingsByUserId(userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(followings));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -94,7 +94,7 @@ public class MyPageController {
     public ResponseEntity<ApiResponse<?>> getScraps(@RequestHeader("Authorization") String authorization) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            List<ScrapResponseDto> scraps = myPageService.getScraps(userId);
+            List<ScrapResponseDto> scraps = myPageService.findAllScrapsByUserId(userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(scraps));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

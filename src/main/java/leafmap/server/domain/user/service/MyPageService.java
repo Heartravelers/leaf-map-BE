@@ -16,7 +16,7 @@ public interface MyPageService {
 
     void deleteProfileImage(Long userId);
 
-    List<FollowingUserDto> getFollowing(Long userId);
+    List<FollowingUserDto> findAllFollowingsByUserId(Long userId);
 
-    List<ScrapResponseDto> getScraps(Long userId);
+    List<ScrapResponseDto> findAllScrapsByUserId(Long userId);
 }
