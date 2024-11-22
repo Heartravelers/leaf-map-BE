@@ -48,8 +48,8 @@ public class S3Provider {
 
     public void removeFile(String url, String dirName) {
         String fileName = url.substring(url.indexOf(dirName + "/"));
-        System.out.println(">>> file name: " + fileName);
         amazonS3Client.deleteObject(bucket, fileName);
+
     }
 
 }

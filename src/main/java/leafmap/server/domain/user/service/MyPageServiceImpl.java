@@ -60,7 +60,7 @@ public class MyPageServiceImpl implements MyPageService {
             if(file != null && !file.isEmpty()){
                 String url = s3Provider.uploadFile(file, new S3UploadRequest(userId, DIR_NAME));
                 if(user.getProfilePicture() != null) {
-                    s3Provider.removeFile(user.getProfilePicture(), DIR_NAME); // 이미지 삭제가 안됨
+                    s3Provider.removeFile(user.getProfilePicture(), DIR_NAME);
                 }
                 user.setProfilePicture(url);
             }
@@ -76,11 +76,11 @@ public class MyPageServiceImpl implements MyPageService {
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             if(user.getProfilePicture() != null) {
-                s3Provider.removeFile(user.getProfilePicture(), DIR_NAME); // 이미지 삭제가 안됨
+                s3Provider.removeFile(user.getProfilePicture(), DIR_NAME);
                 user.setProfilePicture(null);
                 userRepository.save(user);
-                return;
             }
+            return;
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }
