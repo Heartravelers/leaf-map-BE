@@ -1,7 +1,7 @@
 package leafmap.server.domain.user.entity;
 
 import jakarta.persistence.*;
-import leafmap.server.domain.challenge.Challenge;
+import leafmap.server.domain.challenge.entity.Challenge;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;

@@ -1,13 +1,10 @@
 package leafmap.server.domain.note.entity;
 
-import leafmap.server.domain.challenge.CategoryChallenge;
+import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
@@ -17,6 +14,7 @@ import java.util.List;
 @Table(name = "CategoryFilter")
 public class CategoryFilter extends BaseEntity {
 
+    //folder 엔티티
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id", nullable = false)
@@ -29,7 +27,7 @@ public class CategoryFilter extends BaseEntity {
     private String color;
 
     @Column(name = "is_default")
-    private Boolean isDefault;
+    private Boolean isDefault; //미사용
 
     @Column(name = "code")
     private String code;

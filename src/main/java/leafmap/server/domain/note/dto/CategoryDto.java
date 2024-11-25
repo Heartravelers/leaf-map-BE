@@ -1,7 +1,7 @@
 package leafmap.server.domain.note.dto;
 
 import jakarta.validation.constraints.NotNull;
-import leafmap.server.domain.challenge.CategoryChallenge;
+import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;

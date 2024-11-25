@@ -2,6 +2,7 @@ package leafmap.server.domain.note.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
@@ -110,8 +111,14 @@ public class NoteController {
     public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable Long userId,
                                                           @PathVariable String category) {
         try {
-            List<NoteDto> notes = noteService.getList(userId, category);
-            return ResponseEntity.ok(ApiResponse.onSuccess(notes));
+            if (){ //본인 노트 목록
+                List<NoteDto> notes = noteService.getList(userId, category);
+                return ResponseEntity.ok(ApiResponse.onSuccess(notes));
+            }
+            else{ //다른 사용자 노트 목록
+                List<NoteDto> notes = noteService.getList(userId, category);
+                return ResponseEntity.ok(ApiResponse.onSuccess(notes));
+            }
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
