@@ -14,7 +14,7 @@ pipeline {
                 sshagent(['leafmapKey']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP << 'EOF'
-                    cd /home/ec2-user/leafmap
+                    cd /home/ec2-user/leafmap/leaf-map-BE
                     git pull origin develop
                     ./deploy.sh
                     EOF
