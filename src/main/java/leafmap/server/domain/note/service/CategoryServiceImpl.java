@@ -6,7 +6,7 @@ import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.repository.CategoryRepository;
 import leafmap.server.domain.user.entity.User;
-import leafmap.server.domain.user.entity.repository.UserRepository;
+import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
 import org.springframework.stereotype.Service;

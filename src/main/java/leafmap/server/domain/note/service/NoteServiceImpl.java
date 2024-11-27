@@ -8,7 +8,7 @@ import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.place.entity.Place;
 import leafmap.server.domain.place.repository.PlaceRepository;
 import leafmap.server.domain.user.entity.User;
-import leafmap.server.domain.user.entity.repository.UserRepository;
+import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
