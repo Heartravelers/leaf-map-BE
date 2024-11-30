@@ -1,4 +1,4 @@
-package leafmap.server.domain.challenge;
+package leafmap.server.domain.challenge.entity;
 
 import jakarta.persistence.*;
 import leafmap.server.domain.note.entity.CategoryFilter;

@@ -1,4 +1,4 @@
-package leafmap.server.domain.challenge;
+package leafmap.server.domain.challenge.entity;
 
 import jakarta.persistence.*;
 import leafmap.server.domain.user.entity.User;
@@ -30,7 +30,10 @@ public class Challenge extends BaseEntity {
     @Column(name = "have_visited")
     private Boolean haveVisited;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
