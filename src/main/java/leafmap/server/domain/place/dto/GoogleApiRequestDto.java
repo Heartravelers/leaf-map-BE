@@ -14,6 +14,8 @@ public class GoogleApiRequestDto {
 
     private LocationRestriction locationRestriction;
 
+    private String languageCode;
+
 
     @AllArgsConstructor
     @Getter
@@ -39,6 +41,7 @@ public class GoogleApiRequestDto {
         this. includedTypes = includedTypes;
         this.maxResultCount = maxResultCount;
         this.locationRestriction = new LocationRestriction(new Circle(new Coordinates(latitude, longitude), radius));
+        languageCode = "ko";
     }
 
 }

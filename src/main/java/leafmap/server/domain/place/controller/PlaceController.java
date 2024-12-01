@@ -2,6 +2,7 @@ package leafmap.server.domain.place.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import leafmap.server.domain.place.entity.Category;
 import leafmap.server.domain.place.service.PlaceService;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -24,7 +25,7 @@ public class PlaceController {
     public ResponseEntity<ApiResponse<?>> getPlaces(@RequestParam double latitude, @RequestParam double longitude,
                                                     @RequestParam(required = false) String keyword, @RequestParam(required = false) String category) {
         try {
-            placeService.findAll(latitude, longitude);
+            placeService.findAll(latitude, longitude, category);
         } catch (Exception e) {
             e.printStackTrace();
         }

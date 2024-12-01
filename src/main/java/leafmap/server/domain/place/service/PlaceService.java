@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PlaceService {
 
-    List<PlaceResponseDto> findAll(double latitude, double longitude); // 이름 수정하기
+    List<PlaceResponseDto> findAll(double latitude, double longitude, String category); // 이름 수정하기
 
 }
