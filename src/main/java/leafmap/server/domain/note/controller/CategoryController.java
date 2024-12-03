@@ -57,7 +57,7 @@ public class CategoryController {
             categoryService.makeCategory(userId, categoryDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
-        catch(CustomException.NotFoundUserException e){
+        catch(CustomException.NotFoundUserException e){ //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (Exception e) {
@@ -105,17 +105,11 @@ public class CategoryController {
     }
 
     @Operation(summary = "폴더 내 지역 필터링")
-    @GetMapping("/folder/{userId}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable Long userId){
+    @GetMapping("/folder/{userId}/{regionName}")
+    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable Long userId,
+                                                  String regionName){
         try{
-            if (){ //본인 폴더 목록
-                List<CategoryDto> categories = categoryService.getCategory(userId);
-                return ResponseEntity.ok(ApiResponse.onSuccess(categories));
-            }
-            else{ //다른 사용자 폴더 목록
-                List<CategoryDto> categories = categoryService.getCategory(userId);
-                return ResponseEntity.ok(ApiResponse.onSuccess(categories));
-            }
+            categoryService.filterNotes(userId, regionName);
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

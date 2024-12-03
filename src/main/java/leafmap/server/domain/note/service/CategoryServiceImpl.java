@@ -3,8 +3,10 @@ package leafmap.server.domain.note.service;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.CategoryDto;
+import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.repository.CategoryRepository;
+import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
@@ -19,12 +21,14 @@ public class CategoryServiceImpl implements CategoryService{
     UserRepository userRepository;
     CategoryRepository categoryRepository;
     CategoryChallengeRepository categoryChallengeRepository;
+    NoteRepository noteRepository;
 
     public CategoryServiceImpl(UserRepository userRepository, CategoryRepository categoryRepository,
-                               CategoryChallengeRepository categoryChallengeRepository){
+                               CategoryChallengeRepository categoryChallengeRepository, NoteRepository noteRepository){
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.categoryChallengeRepository = categoryChallengeRepository;
+        this.noteRepository = noteRepository;
     }
 
     @Override
@@ -90,6 +94,16 @@ public class CategoryServiceImpl implements CategoryService{
             throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND);
         }
         categoryChallengeRepository.deleteById(optionalChallenge.get().getId());
+    }
+
+    @Override
+    public List<NoteDto> filterNotes(Long userId, String regionName){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()){
+            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return noteRepository.findByUserIdAndRegionName(userId, regionName);
     }
 
 }
