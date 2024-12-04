@@ -47,4 +47,4 @@ jobs:
             docker pull leafmap:latest  # 이미 빌드된 이미지를 EC2로 풀링
             docker stop leafmap-container || true  # 기존 컨테이너 중지
             docker rm leafmap-container || true  # 기존 컨테이너 삭제
-            docker run --env-file ~/leafmap-deploy/.env -d -p 8080:8080 --name leafmap-container leafmap:latest  # 새로운 컨테이너 실행
+            docker run --env-file /home/ec2-user/leafmap-deploy/.env -d -p 8080:8080 --name leafmap-container leafmap:latest  # 새로운 컨테이너 실행
