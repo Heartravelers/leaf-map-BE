@@ -1,19 +1,22 @@
 package leafmap.server.domain.note.service;
 
+import jakarta.transaction.Transactional;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.Scrap;
 import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.note.repository.ScrapRepository;
 import leafmap.server.domain.user.entity.User;
-import leafmap.server.domain.user.entity.repository.UserRepository;
+import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ScrapServiceImpl implements ScrapService{
     private UserRepository userRepository;
     private ScrapRepository scrapRepository;
@@ -62,6 +65,10 @@ public class ScrapServiceImpl implements ScrapService{
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
         }
         Note note = optionalNote.get();
+
+        if (!Objects.equals(userId, note.getUser().getId())){
+            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+        }
 
         Optional<Scrap> optionalScrap = scrapRepository.findById(noteId);
         if (!(optionalScrap.get().getStatus())){

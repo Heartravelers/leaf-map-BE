@@ -1,6 +1,7 @@
 package leafmap.server.domain.note.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.dto.NoteDto;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Tag(name = "NOTE", description = "NOTE 관련 API")
 public class NoteController {
     private NoteServiceImpl noteService;
 
@@ -27,17 +29,12 @@ public class NoteController {
 
     @Operation(summary = "노트 상세 조회")
     @GetMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> getNote(@RequestHeader String token,
+    public ResponseEntity<ApiResponse<?>> getNote(@RequestHeader("Authorization") String authorization,
                                                   @PathVariable Long noteId){
         try{
-            if (){ //본인 글
-                NoteDto noteDto = noteService.getMyNote(noteId);
-                return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
-            }
-            else{ //다른 사용자 글
-                NoteDto noteDto = noteService.getUserNote(noteId);
-                return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
-            }
+            Long userId = Long.parseLong(authorization); // 테스트용
+            NoteDto noteDto = noteService.getNote(userId, noteId);
+            return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -54,14 +51,17 @@ public class NoteController {
 
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
-    public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader String token,
+    public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader("Authorization") String authorization,
                                                    @Valid @RequestBody NoteDto noteDto){
         try {
-            //token 에서 userId 추출
+            Long userId = Long.parseLong(authorization); // 테스트용
             noteService.postNote(userId, noteDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch(CustomException.BadRequestException e){
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (Exception e) {
@@ -70,17 +70,18 @@ public class NoteController {
 
     @Operation(summary = "노트 수정")
     @PutMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader String token,
+    public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable Long noteId,
                                                      @Valid @RequestBody NoteDto noteDto){
         try {
-            if () { //본인이 아닌 경우 getToken != note userId
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorCode.FORBIDDEN.getErrorResponse());
-            }
-            noteService.updateNote(noteId, noteDto);
+            Long userId = Long.parseLong(authorization); // 테스트용
+            noteService.updateNote(userId, noteId, noteDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch(CustomException.ForbiddenException e){    //권한 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (Exception e) {
@@ -89,16 +90,20 @@ public class NoteController {
 
     @Operation(summary = "노트 삭제")
     @DeleteMapping("/note/{noteId}")
-    public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader String token,
+    public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable Long noteId) {
         try {
-            if () { //본인이 아닌 경우 getToken != note userId
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorCode.FORBIDDEN.getErrorResponse());
-            }
-            noteService.deleteNote(noteId);
+            Long userId = Long.parseLong(authorization); // 테스트용
+            noteService.deleteNote(userId, noteId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch (CustomException.ForbiddenException e) {   //권한 없음
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+        }
+        catch(CustomException.BadRequestException e){
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (Exception e) {
@@ -111,14 +116,8 @@ public class NoteController {
     public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable Long userId,
                                                           @PathVariable String category) {
         try {
-            if (){ //본인 노트 목록
-                List<NoteDto> notes = noteService.getList(userId, category);
-                return ResponseEntity.ok(ApiResponse.onSuccess(notes));
-            }
-            else{ //다른 사용자 노트 목록
-                List<NoteDto> notes = noteService.getList(userId, category);
-                return ResponseEntity.ok(ApiResponse.onSuccess(notes));
-            }
+            List<NoteDto> notes = noteService.getList(userId, category);
+            return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());

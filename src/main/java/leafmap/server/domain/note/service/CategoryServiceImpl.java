@@ -1,5 +1,6 @@
 package leafmap.server.domain.note.service;
 
+import jakarta.transaction.Transactional;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.CategoryDto;
@@ -14,9 +15,11 @@ import leafmap.server.global.common.exception.CustomException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CategoryServiceImpl implements CategoryService{
     UserRepository userRepository;
     CategoryRepository categoryRepository;
@@ -69,10 +72,14 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void updateCategory(Long folderId, CategoryDto categoryDto){ //폴더 수정
+    public void updateCategory(Long userId, Long folderId, CategoryDto categoryDto){ //폴더 수정
         Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
         if (optionalCategory.isEmpty()){
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
+        }
+
+        if (!Objects.equals(userId, optionalCategory.get().getUser().getId())){
+            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
         CategoryFilter category = CategoryFilter.builder()
@@ -82,17 +89,22 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void deleteCategory(Long folderId){
+    public void deleteCategory(Long userId, Long folderId){
         Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
         if (optionalCategory.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
         }
+        if (!Objects.equals(userId, optionalCategory.get().getUser().getId())){
+            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+        }
+
         categoryRepository.deleteById(folderId);
 
         Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryId(folderId);
         if (optionalChallenge.isEmpty()){
             throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND);
         }
+
         categoryChallengeRepository.deleteById(optionalChallenge.get().getId());
     }
 

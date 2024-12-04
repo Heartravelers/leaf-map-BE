@@ -8,8 +8,8 @@ import java.util.List;
 public interface CategoryService {
     void makeCategory(Long userId, CategoryDto categoryDto);
     List<CategoryDto> getCategory(Long userId);
-    void updateCategory(Long categoryId, CategoryDto categoryDto);
-    void deleteCategory(Long categoryId);
+    void updateCategory(Long userId, Long categoryId, CategoryDto categoryDto);
+    void deleteCategory(Long userId, Long categoryId);
     List<NoteDto> filterNotes(Long userId, String regionName);
 
 }
