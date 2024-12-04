@@ -1,3 +1,5 @@
+//jenkins > github-action 으로 CI/CD 재구현
+
 pipeline {
     agent any
     environment {
