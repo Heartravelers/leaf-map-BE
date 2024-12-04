@@ -1,6 +1,9 @@
 package leafmap.server.domain.place.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import leafmap.server.domain.place.dto.GoogleApiKeywordRequestDto;
 import leafmap.server.domain.place.dto.GoogleApiRequestDto;
+import leafmap.server.domain.place.dto.GoogleApiResponseDto;
 import leafmap.server.domain.place.dto.PlaceResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,9 +15,11 @@ import java.util.List;
 @Service
 public class PlaceServiceImpl implements PlaceService {
 
-    private static final int MAX_RESULT_COUNT = 10;
+    private static final int MAX_RESULT_COUNT = 5;
 
     private static final double RADIUS = 500;
+
+    private static final String FIELD_MASK = "places.id,places.displayName,places.primaryType,places.formattedAddress,places.photos,places.location";
 
     @Value("${google.api-key}")
     private String apiKey;
@@ -49,13 +54,49 @@ public class PlaceServiceImpl implements PlaceService {
                 .uri(url)
                 .bodyValue(requestBody)
                 .header("X-Goog-Api-Key", apiKey)
-                .header("X-Goog-FieldMask", "places.id,places.displayName,places.types,places.formattedAddress,places.photos,places.location")
+                .header("X-Goog-FieldMask", FIELD_MASK)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
 
-        System.out.println(data);
-
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleApiResponseDto response = null;
+        try {
+            response = objectMapper.readValue(data, GoogleApiResponseDto.class);
+            return response.getPlaces().stream().map(PlaceResponseDto::new).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
+
+    @Override
+    public List<PlaceResponseDto> findAllByKeyword(double latitude, double longitude, String keyword) {
+
+        String url = "https://places.googleapis.com/v1/places:searchText";
+
+        GoogleApiKeywordRequestDto requestBody = new GoogleApiKeywordRequestDto(keyword, MAX_RESULT_COUNT, RADIUS, latitude, longitude);
+
+        WebClient webClient = WebClient.create();
+        String data = webClient
+                .post()
+                .uri(url)
+                .bodyValue(requestBody)
+                .header("X-Goog-Api-Key", apiKey)
+                .header("X-Goog-FieldMask", FIELD_MASK)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleApiResponseDto response = null;
+        try {
+            response = objectMapper.readValue(data, GoogleApiResponseDto.class);
+            return response.getPlaces().stream().map(PlaceResponseDto::new).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

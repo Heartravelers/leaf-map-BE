@@ -8,4 +8,6 @@ public interface PlaceService {
 
     List<PlaceResponseDto> findAll(double latitude, double longitude, String category); // 이름 수정하기
 
+    List<PlaceResponseDto> findAllByKeyword(double latitude, double longitude, String keyword);
+
 }
