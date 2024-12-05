@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "SCRAP", description = "SCRAP 관련 API")
+@Tag(name = "Scrap", description = "Scrap 관련 API")
 public class ScrapController {
     private ScrapServiceImpl scrapService;
 

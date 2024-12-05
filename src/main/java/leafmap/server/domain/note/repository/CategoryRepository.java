@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<CategoryFilter, Long> {
-    Optional<CategoryFilter> findByCategoryName(String categoryName);
+    Optional<CategoryFilter> findByName(String categoryName);
     List<CategoryDto> findByUserId(Long userId);
 
 }

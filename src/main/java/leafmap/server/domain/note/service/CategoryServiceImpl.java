@@ -6,12 +6,15 @@ import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.note.repository.CategoryRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
+import leafmap.server.domain.note.repository.RegionFilterRepository;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +28,17 @@ public class CategoryServiceImpl implements CategoryService{
     CategoryRepository categoryRepository;
     CategoryChallengeRepository categoryChallengeRepository;
     NoteRepository noteRepository;
+    RegionFilterRepository regionFilterRepository;
 
+    @Autowired
     public CategoryServiceImpl(UserRepository userRepository, CategoryRepository categoryRepository,
-                               CategoryChallengeRepository categoryChallengeRepository, NoteRepository noteRepository){
+                               CategoryChallengeRepository categoryChallengeRepository, NoteRepository noteRepository,
+                               RegionFilterRepository regionFilterRepository){
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.categoryChallengeRepository = categoryChallengeRepository;
         this.noteRepository = noteRepository;
+        this.regionFilterRepository = regionFilterRepository;
     }
 
     @Override
@@ -58,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService{
 
         categoryRepository.save(categoryFilter);
 
-        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByUserAndCategory(userId, categoryFilter.getId());
+        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByUserAndCategoryFilter(optionalUser.get(), categoryFilter);
         if (optionalChallenge.isPresent()){
             throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST); //이미 존재
         }
@@ -100,7 +107,7 @@ public class CategoryServiceImpl implements CategoryService{
 
         categoryRepository.deleteById(folderId);
 
-        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryId(folderId);
+        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryFilter(optionalCategory.get());
         if (optionalChallenge.isEmpty()){
             throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND);
         }
@@ -115,7 +122,9 @@ public class CategoryServiceImpl implements CategoryService{
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
-        return noteRepository.findByUserIdAndRegionName(userId, regionName);
+        RegionFilter regionFilter = regionFilterRepository.findByRegionName(regionName);
+
+        return noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
     }
 
 }

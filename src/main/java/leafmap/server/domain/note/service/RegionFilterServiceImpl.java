@@ -17,7 +17,7 @@ public class RegionFilterServiceImpl implements RegionFilterService{
     private RegionFilterRepository regionFilterRepository;
 
     @Autowired
-    private RegionFilterServiceImpl(RegionFilterRepository regionFilterRepository){
+    public RegionFilterServiceImpl(RegionFilterRepository regionFilterRepository){
         this.regionFilterRepository = regionFilterRepository;
     }
 
@@ -63,12 +63,12 @@ public class RegionFilterServiceImpl implements RegionFilterService{
     }
 
     @Override
-    public void increaseRegionNoteCount(Long userId, String regionName){ // 이미 userId는 이전 메서드에서 검사
-        regionFilterRepository.increaseCountNote(userId, regionName);
+    public void increaseRegionNoteCount(User user, String regionName){ // 이미 userId는 이전 메서드에서 검사
+        regionFilterRepository.increaseCountNote(user, regionName);
     }
 
     @Override
-    public void decreaseRegionNoteCount(Long userId, String regionName) { // 이미 userId는 이전 메서드에서 검사
-        regionFilterRepository.decreaseCountNote(userId, regionName);
+    public void decreaseRegionNoteCount(User user, String regionName) { // 이미 userId는 이전 메서드에서 검사
+        regionFilterRepository.decreaseCountNote(user, regionName);
     }
 }

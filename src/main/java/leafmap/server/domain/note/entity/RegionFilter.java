@@ -21,7 +21,7 @@ public class RegionFilter {
     //충청남도 광주 울산 충청북도
 
     @Column(name = "count_note")
-    private Integer countNote;
+    private int countNote;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

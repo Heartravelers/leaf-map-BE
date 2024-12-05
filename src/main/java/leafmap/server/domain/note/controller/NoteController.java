@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Tag(name = "NOTE", description = "NOTE 관련 API")
+@Tag(name = "Note", description = "Note 관련 API")
 public class NoteController {
     private NoteServiceImpl noteService;
 

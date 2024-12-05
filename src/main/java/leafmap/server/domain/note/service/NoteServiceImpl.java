@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,20 +28,17 @@ public class NoteServiceImpl implements NoteService{
     private PlaceRepository placeRepository;
     private UserRepository userRepository;
     private RegionFilterRepository regionFilterRepository;
-    private NoteDto noteDto;
     private RegionFilterServiceImpl regionFilterService;
     private CategoryRepository categoryRepository;
 
     @Autowired
     public NoteServiceImpl(NoteRepository noteRepository, PlaceRepository placeRepository,
                            UserRepository userRepository, RegionFilterRepository regionFilterRepository,
-                           NoteDto noteDto, RegionFilterServiceImpl regionFilterService,
-                           CategoryRepository categoryRepository){
+                           RegionFilterServiceImpl regionFilterService, CategoryRepository categoryRepository){
         this.noteRepository = noteRepository;
         this.placeRepository = placeRepository;
         this.userRepository = userRepository;
         this.regionFilterRepository = regionFilterRepository;
-        this.noteDto = noteDto;
         this.regionFilterService = regionFilterService;
         this.categoryRepository = categoryRepository;
     }
@@ -52,7 +50,7 @@ public class NoteServiceImpl implements NoteService{
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
         }
         Note note = optionalNote.get();
-        Optional<User> optionalUser = noteRepository.findByNoteId(noteId);
+        Optional<User> optionalUser = userRepository.findById(note.getUser().getId());
         if (optionalUser.isEmpty()) {
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
@@ -60,18 +58,8 @@ public class NoteServiceImpl implements NoteService{
             if (!note.getIsPublic()){
                 throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
             }
-        noteDto.builder()
-                .userId(note.getUser().getId())
-                .profilePicture(note.getUser().getProfilePicture())
-                .title(note.getTitle())
-                .date(note.getDate())
-                .placeName(note.getPlace().getName())
-                .address(note.getPlace().getAddress())
-                .placeId(note.getPlace().getId())
-                .content(note.getContent())
-                .noteImages(note.getNoteImages())
-                .categoryFilter(note.getCategoryFilter())
-                .countHeart(note.getCountHeart());
+
+        NoteDto noteDto = new NoteDto(note);
         return noteDto;
     }
 
@@ -92,9 +80,10 @@ public class NoteServiceImpl implements NoteService{
         if (optionalPlace.isEmpty()){
             Place place = Place.builder()
                     .id(noteDto.getPlaceId())
+                    .name(noteDto.getPlaceName())
                     .address(noteDto.getAddress())
                     .regionName(region).build();
-            placeRepository.save(optionalPlace.get());
+            placeRepository.save(place);
         }
 
         Note note = Note.builder()
@@ -107,7 +96,7 @@ public class NoteServiceImpl implements NoteService{
                 .place(optionalPlace.get())
                 .user(optionalUser.get()).build();
         noteRepository.save(note);
-        regionFilterService.increaseRegionNoteCount(userId, region);
+        regionFilterService.increaseRegionNoteCount(optionalUser.get(), region);
     }
     @Override   //노트 수정
     public void updateNote(Long userId, Long noteId, NoteDto noteDto){
@@ -146,7 +135,7 @@ public class NoteServiceImpl implements NoteService{
         }
 
         noteRepository.deleteById(noteId);
-        regionFilterService.decreaseRegionNoteCount(userId, region);
+        regionFilterService.decreaseRegionNoteCount(optionalNote.get().getUser(), region);
     }
 
     @Override    //폴더 내 노트목록 조회
@@ -155,11 +144,16 @@ public class NoteServiceImpl implements NoteService{
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
-        Optional<CategoryFilter> optionalCategory = categoryRepository.findByCategoryName(categoryName);
+        Optional<CategoryFilter> optionalCategory = categoryRepository.findByName(categoryName);
         if (optionalCategory.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
         }
 
-        return noteRepository.findByUserIdAndCategory(userId, categoryName); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
+        List<Note> notes = noteRepository.findByUserAndCategoryFilter(optionalUser.get(), optionalCategory.get()); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
+
+        return notes.stream()
+                .map(NoteDto::new)
+                .collect(Collectors.toList());
+
     }
 }

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Tag(name = "Folder(=category)", description = "Folder 관련 API")
+@Tag(name = "Folder", description = "Folder 관련 API")
 public class CategoryController {
     private CategoryServiceImpl categoryService;
 
