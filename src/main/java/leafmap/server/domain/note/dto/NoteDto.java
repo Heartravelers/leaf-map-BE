@@ -29,7 +29,7 @@ public class NoteDto {
     private List<NoteImage> noteImages;
     private String placeName;
     private String address;
-    private Integer countHeart;
+    private int countHeart;
     private CategoryFilter categoryFilter;
 
 

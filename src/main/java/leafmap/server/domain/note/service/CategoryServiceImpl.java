@@ -6,6 +6,7 @@ import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.note.repository.CategoryRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -48,7 +50,11 @@ public class CategoryServiceImpl implements CategoryService{
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
-        return categoryRepository.findByUserId(userId);
+        List<CategoryFilter> categoryFilters = categoryRepository.findByUser(optionalUser.get());
+
+        return categoryFilters.stream()
+                .map(CategoryDto::new)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -96,7 +102,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void deleteCategory(Long userId, Long folderId){
+    public void deleteCategory(Long userId, Long folderId){  //지역 필터링
         Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
         if (optionalCategory.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
@@ -123,8 +129,11 @@ public class CategoryServiceImpl implements CategoryService{
         }
 
         RegionFilter regionFilter = regionFilterRepository.findByRegionName(regionName);
+        List<Note> notes = noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
 
-        return noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
+        return notes.stream()
+                .map(NoteDto::new)
+                .collect(Collectors.toList());
     }
 
 }

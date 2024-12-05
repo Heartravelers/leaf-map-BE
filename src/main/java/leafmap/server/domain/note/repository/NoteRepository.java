@@ -17,6 +17,5 @@ import java.util.Optional;
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
     List<Note> findByUserAndCategoryFilter(User user, CategoryFilter categoryFilter);
-//    List<NoteDto> findByUserIdAndCategoryFilter(Long userId, CategoryFilter categoryFilter);
-    List<NoteDto> findByUserAndRegionFilter(User user, RegionFilter regionFilter);
+    List<Note> findByUserAndRegionFilter(User user, RegionFilter regionFilter);
 }
