@@ -1,0 +1,106 @@
+spring:
+  profile:
+    active: dev
+
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    driver-class-name: ${DB_DRIVER}
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update
+
+  jwt:
+    secret: ${JWT_SECRET}
+    redirect: ${JWT_REDIRECT_URI}
+    access-token:
+      expiration-time: ${ACCESS_TOKEN_EXPIRATION_TIME}
+    refresh-token:
+      expiration-time: ${REFRESH_TOKEN_EXPIRATION_TIME}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - profile
+              - email
+              - openid
+          naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            scope:
+              - name
+              - email
+            client-name: Naver
+
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope: # https://developers.kakao.com/docs/latest/ko/kakaologin/common#user-info
+              - profile_nickname
+              - profile_image
+              - account_email
+            client-name: Kakao
+
+        provider:
+          google:
+            authorization-uri: ${GOOGLE_AUTHORIZATION_URI}
+            token-uri: ${GOOGLE_TOKEN_URI}
+            user-info-uri: ${GOOGLE_USER_INFO_URI}
+          naver:
+            authorization-uri: ${NAVER_AUTHORIZATION_URI}
+            token-uri: ${NAVER_TOKEN_URI}
+            user-info-uri: ${NAVER_USER_INFO_URI}
+            user-name-attribute: response
+
+          kakao:
+            authorization-uri: ${KAKAO_AUTHORIZATION_URI}
+            token-uri: ${KAKAO_TOKEN_URI}
+            user-info-uri: ${KAKAO_USER_INFO_URI}
+
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: method
+    doc-expansion: none
+
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      instance-profile: true
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
+
+  redis:
+    host: localhost
+    port: 6379

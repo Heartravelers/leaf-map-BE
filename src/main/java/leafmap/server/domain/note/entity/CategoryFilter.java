@@ -1,13 +1,10 @@
 package leafmap.server.domain.note.entity;
 
-import leafmap.server.domain.challenge.CategoryChallenge;
+import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
