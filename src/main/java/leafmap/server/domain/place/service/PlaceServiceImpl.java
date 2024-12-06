@@ -1,18 +1,19 @@
 package leafmap.server.domain.place.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import leafmap.server.domain.place.dto.GoogleApiKeywordRequestDto;
-import leafmap.server.domain.place.dto.GoogleApiRequestDto;
-import leafmap.server.domain.place.dto.GoogleApiResponseDto;
-import leafmap.server.domain.place.dto.PlaceResponseDto;
+import leafmap.server.domain.place.dto.*;
+import leafmap.server.domain.place.entity.Place;
+import leafmap.server.domain.place.repository.PlaceRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlaceServiceImpl implements PlaceService {
@@ -25,9 +26,13 @@ public class PlaceServiceImpl implements PlaceService {
     private static final int MAX_RESULT_COUNT = 5;
     private static final double RADIUS = 500;
     private static final String FIELD_MASK = "places.id,places.displayName,places.primaryType,places.formattedAddress,places.photos,places.location";
+    private static final String DETAIL_FIELD_MASK = "displayName,formattedAddress,primaryType,photos";
 
     @Value("${google.api-key}")
     private String apiKey;
+
+    @Autowired
+    PlaceRepository placeRepository;
 
     @Override
     public List<PlaceResponseDto> findAll(double latitude, double longitude, String category) {
@@ -107,6 +112,35 @@ public class PlaceServiceImpl implements PlaceService {
         try {
             response = objectMapper.readValue(data, GoogleApiResponseDto.class);
             return response.getPlaces().stream().map(PlaceResponseDto::new).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public PlaceDetailResponseDto findById(String id) {
+        String url = "https://places.googleapis.com/v1/places/" + id + "?languageCode=ko";
+
+        WebClient webClient = WebClient.create();
+        String data = webClient
+                .get()
+                .uri(url)
+                .header("X-Goog-Api-Key", apiKey)
+                .header("X-Goog-FieldMask", DETAIL_FIELD_MASK)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        GooglePlace response = null;
+        try {
+            response = objectMapper.readValue(data, GooglePlace.class);
+            Optional<Place> placeOptional = placeRepository.findById(id);
+            if(placeOptional.isPresent()) {
+                return new PlaceDetailResponseDto(response, placeOptional.get().getNotes());
+            }
+            throw new CustomException(ErrorCode.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();
         }
