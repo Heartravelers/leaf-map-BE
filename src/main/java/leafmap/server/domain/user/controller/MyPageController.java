@@ -75,7 +75,7 @@ public class MyPageController {
     }
 
     @Operation(summary = "구독한 사용자 조회")
-    @GetMapping("/mypage/subscribe")
+    @GetMapping("/mypage/subscriptions")
     public ResponseEntity<ApiResponse<?>> getSubscribe(@RequestHeader("Authorization") String authorization) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
