@@ -29,9 +29,9 @@ public class PlaceController {
     @Operation(summary = "플레이스 조회")
     @GetMapping("/places")
     public ResponseEntity<ApiResponse<?>> getPlaces(@RequestParam double latitude, @RequestParam double longitude,
-                                                    @RequestParam(required = false) String category) {
+                                                    @RequestParam(required = false) String category, @RequestParam(required = false) String keyword) {
         try {
-            List<PlaceResponseDto> response = placeService.findAll(latitude, longitude, category);
+            List<PlaceResponseDto> response = placeService.findAll(latitude, longitude, category, keyword);
             return ResponseEntity.ok(ApiResponse.onSuccess(response));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -41,12 +41,13 @@ public class PlaceController {
         }
     }
 
+    /*
     @Operation(summary = "플레이스 조회 - 키워드")
     @GetMapping("/places/keyword")
     public ResponseEntity<ApiResponse<?>> getPlacesByKeyword(@RequestParam double latitude, @RequestParam double longitude,
                                                              @RequestParam String keyword) {
         try {
-            List<PlaceResponseDto> response = placeService.findAllByKeyword(latitude, longitude, keyword);
+            List<PlaceResponseDto> response = placeService.findAll(latitude, longitude, null, keyword);
             return ResponseEntity.ok(ApiResponse.onSuccess(response));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -55,6 +56,7 @@ public class PlaceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
         }
     }
+    */
 
     @Operation(summary = "플레이스 상세 조회")
     @GetMapping("/place/{placeId}")
