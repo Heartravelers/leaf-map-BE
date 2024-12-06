@@ -21,7 +21,7 @@ public class PlaceResponseDto {
         this.category = googlePlace.getPrimaryType();
         this.address = googlePlace.getFormattedAddress();
         if(googlePlace.getPhotos() != null && !googlePlace.getPhotos().isEmpty()) {
-            this.image = googlePlace.getPhotos().get(1).getGoogleMapsUri();
+            this.image = googlePlace.getPhotos().get(0).getGoogleMapsUri();
         } else {
             this.image = null;
         }

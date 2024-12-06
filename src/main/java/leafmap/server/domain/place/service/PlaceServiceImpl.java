@@ -5,6 +5,8 @@ import leafmap.server.domain.place.dto.GoogleApiKeywordRequestDto;
 import leafmap.server.domain.place.dto.GoogleApiRequestDto;
 import leafmap.server.domain.place.dto.GoogleApiResponseDto;
 import leafmap.server.domain.place.dto.PlaceResponseDto;
+import leafmap.server.global.common.ErrorCode;
+import leafmap.server.global.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,10 +17,13 @@ import java.util.List;
 @Service
 public class PlaceServiceImpl implements PlaceService {
 
+    private static final double LATITUDE_MIN = 33.0;
+    private static final double LATITUDE_MAX = 38.6278;
+    private static final double LONGITUDE_MIN = 125.5666;
+    private static final double LONGITUDE_MAX = 131.8696;
+
     private static final int MAX_RESULT_COUNT = 5;
-
     private static final double RADIUS = 500;
-
     private static final String FIELD_MASK = "places.id,places.displayName,places.primaryType,places.formattedAddress,places.photos,places.location";
 
     @Value("${google.api-key}")
@@ -27,7 +32,9 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceResponseDto> findAll(double latitude, double longitude, String category) {
 
-        String url = "https://places.googleapis.com/v1/places:searchNearby";
+        if(latitude < LATITUDE_MIN || latitude > LATITUDE_MAX || longitude < LONGITUDE_MIN || longitude > LONGITUDE_MAX) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
 
         List<String> includedTypes = new ArrayList<>();
         if(category != null) {
@@ -43,8 +50,11 @@ public class PlaceServiceImpl implements PlaceService {
                                 "barbecue_area","botanical_garden","bowling_alley","comedy_club","community_center","concert_hall","convention_center","cultural_center","cycling_park","dance_hall","dog_park","ferris_wheel","garden",
                                 "hiking_area","internet_cafe","karaoke","marina","movie_theater","national_park","opera_house","park","philharmonic_hall","picnic_ground","planetarium","plaza","roller_coaster","skateboard_park","state_park",
                                 "tourist_attraction","video_arcade","visitor_center","water_park","wildlife_park","zoo","arena","athletic_field","ice_skating_rink");
+                default -> throw new CustomException(ErrorCode.BAD_REQUEST);
             }
         }
+
+        String url = "https://places.googleapis.com/v1/places:searchNearby";
 
         GoogleApiRequestDto requestBody = new GoogleApiRequestDto(includedTypes, MAX_RESULT_COUNT, RADIUS, latitude, longitude);
 
@@ -72,6 +82,10 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public List<PlaceResponseDto> findAllByKeyword(double latitude, double longitude, String keyword) {
+
+        if(latitude < LATITUDE_MIN || latitude > LATITUDE_MAX || longitude < LONGITUDE_MIN || longitude > LONGITUDE_MAX || keyword == null || keyword.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
 
         String url = "https://places.googleapis.com/v1/places:searchText";
 
