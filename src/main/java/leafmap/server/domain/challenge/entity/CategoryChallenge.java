@@ -1,5 +1,6 @@
 package leafmap.server.domain.challenge.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.user.entity.User;
@@ -23,6 +24,7 @@ public class CategoryChallenge {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonBackReference
     private CategoryFilter categoryFilter;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,9 @@
 package leafmap.server.domain.note.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import leafmap.server.domain.place.entity.Place;
@@ -25,10 +29,12 @@ public class Note extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
+    @JsonManagedReference
     private Place place;
 
     @Column(name = "title")
@@ -58,9 +64,11 @@ public class Note extends BaseEntity {
     private CategoryFilter categoryFilter;
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<NoteImage> noteImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Scrap> scraps = new ArrayList<>();
 
     public void increaseHeart() { // makeScrap 에서 사용

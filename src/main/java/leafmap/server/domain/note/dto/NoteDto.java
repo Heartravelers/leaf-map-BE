@@ -1,5 +1,6 @@
 package leafmap.server.domain.note.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
@@ -30,6 +31,7 @@ public class NoteDto {
     private String placeName;
     private String address;
     private int countHeart;
+    @JsonIgnore
     private CategoryFilter categoryFilter;
 
 

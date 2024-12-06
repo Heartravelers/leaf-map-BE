@@ -1,5 +1,7 @@
 package leafmap.server.domain.note.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
@@ -37,8 +39,10 @@ public class CategoryFilter extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @OneToOne(mappedBy = "categoryFilter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private CategoryChallenge categoryChallenge;
 }

@@ -1,5 +1,6 @@
 package leafmap.server.domain.challenge.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
@@ -32,5 +33,6 @@ public class Challenge extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 }

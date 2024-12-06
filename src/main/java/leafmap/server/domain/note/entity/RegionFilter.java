@@ -1,4 +1,5 @@
 package leafmap.server.domain.note.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.user.entity.User;
 import lombok.*;
@@ -25,5 +26,6 @@ public class RegionFilter {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 }

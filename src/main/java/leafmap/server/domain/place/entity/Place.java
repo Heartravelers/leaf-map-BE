@@ -1,6 +1,7 @@
 package leafmap.server.domain.place.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.place.entity.Category;
@@ -39,6 +40,7 @@ public class Place extends BaseEntity {
     private String regionName;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Note> notes = new ArrayList<>();
 
 }

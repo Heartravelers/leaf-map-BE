@@ -1,5 +1,6 @@
 package leafmap.server.domain.note.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.global.common.BaseEntity;
@@ -22,5 +23,6 @@ public class NoteImage extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
+    @JsonBackReference
     private Note note;
 }

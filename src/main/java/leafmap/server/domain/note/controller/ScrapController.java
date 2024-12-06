@@ -25,7 +25,7 @@ public class ScrapController {
     @Operation(summary = "하트 추가 및 스크랩")
     @PostMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> makeScarp(@RequestHeader("Authorization") String authorization,
-                                                    @PathVariable Long noteId){
+                                                    @PathVariable("noteId") Long noteId){
         try{
             Long userId = Long.parseLong(authorization);
             scrapService.makeScrap(userId, noteId);
@@ -47,7 +47,7 @@ public class ScrapController {
     @Operation(summary = "하트 삭제 및 스크랩 취소")
     @DeleteMapping({"/note/{noteId}", "/note/{noteId}/scrap"})
     public ResponseEntity<ApiResponse<?>> deleteScrap(@RequestHeader("Authorization") String authorization,
-                                                      @PathVariable Long noteId){
+                                                      @PathVariable("noteId") Long noteId){
         try{
             Long userId = Long.parseLong(authorization);
             scrapService.deleteScrap(userId, noteId);

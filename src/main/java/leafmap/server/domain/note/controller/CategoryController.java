@@ -32,7 +32,7 @@ public class CategoryController {
 
     @Operation(summary = "폴더 목록 조회")
     @GetMapping("/folder/{userId}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable Long userId){
+    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable("userId") Long userId){
         try{
             List<CategoryDto> categories = categoryService.getCategory(userId); //**폴더 목록 비공개 있다면 고쳐야 함(폴더 내 노트목록 api 참고) - serviceImpl 도
             return ResponseEntity.ok(ApiResponse.onSuccess(categories));
@@ -65,7 +65,7 @@ public class CategoryController {
     @Operation(summary = "폴더 수정")
     @PutMapping("/folder/{folderId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable Long folderId,
+                                                     @PathVariable("folderId") Long folderId,
                                                      @Valid @RequestBody CategoryDto categoryDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
@@ -85,7 +85,7 @@ public class CategoryController {
     @Operation(summary = "폴더 삭제")
     @DeleteMapping("/folder/{folderId}")
     public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable Long folderId) {
+                                                     @PathVariable("folderId") Long folderId) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             categoryService.deleteCategory(userId, folderId);
@@ -107,8 +107,8 @@ public class CategoryController {
 
     @Operation(summary = "폴더 내 지역 필터링")
     @GetMapping("/folder/{userId}/{regionName}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable Long userId,
-                                                  @PathVariable String regionName){
+    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable("userId") Long userId,
+                                                  @PathVariable("regionName") String regionName){
         try{
             List<NoteDto> notes = categoryService.filterNotes(userId, regionName);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));

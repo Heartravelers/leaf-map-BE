@@ -3,7 +3,6 @@ package leafmap.server.domain.note.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import leafmap.server.domain.note.dto.CategoryDto;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
@@ -30,7 +29,7 @@ public class NoteController {
     @Operation(summary = "노트 상세 조회")
     @GetMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> getNote(@RequestHeader("Authorization") String authorization,
-                                                  @PathVariable Long noteId){
+                                                  @PathVariable("noteId") Long noteId){
         try{
             Long userId = Long.parseLong(authorization); // 테스트용
             NoteDto noteDto = noteService.getNote(userId, noteId);
@@ -52,7 +51,7 @@ public class NoteController {
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
     public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader("Authorization") String authorization,
-                                                   @Valid @RequestBody NoteDto noteDto){
+                                                   @RequestBody NoteDto noteDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             noteService.postNote(userId, noteDto);
@@ -71,7 +70,7 @@ public class NoteController {
     @Operation(summary = "노트 수정")
     @PutMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable Long noteId,
+                                                     @PathVariable("noteId") Long noteId,
                                                      @Valid @RequestBody NoteDto noteDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
@@ -91,7 +90,7 @@ public class NoteController {
     @Operation(summary = "노트 삭제")
     @DeleteMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable Long noteId) {
+                                                     @PathVariable("noteId") Long noteId) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             noteService.deleteNote(userId, noteId);
@@ -113,8 +112,8 @@ public class NoteController {
 
     @Operation(summary = "폴더 내 노트목록 조회")
     @GetMapping("/notelist/{userId}/{category}")
-    public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable Long userId,
-                                                          @PathVariable String category) {
+    public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable("userId") Long userId,
+                                                          @PathVariable("category") String category) {
         try {
             List<NoteDto> notes = noteService.getList(userId, category);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
