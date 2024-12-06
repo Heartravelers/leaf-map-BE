@@ -47,6 +47,8 @@ dependencies {
 
 	// JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'  // MariaDB 드라이버 추가
+	implementation 'org.hibernate:hibernate-core:6.2.0.Final' //추가
 
 	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
