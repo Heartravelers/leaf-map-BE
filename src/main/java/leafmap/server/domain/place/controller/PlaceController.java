@@ -1,6 +1,9 @@
 package leafmap.server.domain.place.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.place.dto.PlaceDetailResponseDto;
 import leafmap.server.domain.place.dto.PlaceResponseDto;
@@ -27,50 +30,44 @@ public class PlaceController {
     PlaceService placeService;
 
     @Operation(summary = "플레이스 조회")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @GetMapping("/places")
-    public ResponseEntity<ApiResponse<?>> getPlaces(@RequestParam double latitude, @RequestParam double longitude,
+    public ResponseEntity<ApiResponse<List<PlaceResponseDto>>> getPlaces(@RequestParam double latitude, @RequestParam double longitude,
                                                     @RequestParam(required = false) String category, @RequestParam(required = false) String keyword) {
         try {
             List<PlaceResponseDto> response = placeService.findAll(latitude, longitude, category, keyword);
             return ResponseEntity.ok(ApiResponse.onSuccess(response));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
         }
     }
-
-    /*
-    @Operation(summary = "플레이스 조회 - 키워드")
-    @GetMapping("/places/keyword")
-    public ResponseEntity<ApiResponse<?>> getPlacesByKeyword(@RequestParam double latitude, @RequestParam double longitude,
-                                                             @RequestParam String keyword) {
-        try {
-            List<PlaceResponseDto> response = placeService.findAll(latitude, longitude, null, keyword);
-            return ResponseEntity.ok(ApiResponse.onSuccess(response));
-        } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
-        }
-    }
-    */
 
     @Operation(summary = "플레이스 상세 조회")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 리소스를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @GetMapping("/place/{placeId}")
-    public ResponseEntity<ApiResponse<?>> getPlaceDetail(@PathVariable("placeId") String placeId) {
+    public ResponseEntity<ApiResponse<PlaceDetailResponseDto>> getPlaceDetail(@PathVariable("placeId") String placeId) {
         try {
             PlaceDetailResponseDto response = placeService.findById(placeId);
             return ResponseEntity.ok(ApiResponse.onSuccess(response));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch (WebClientResponseException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(ErrorCode.BAD_REQUEST.getErrorResponse());
+            return ResponseEntity.status(e.getStatusCode()).body(ApiResponse.onFailure(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
         }
     }
 
