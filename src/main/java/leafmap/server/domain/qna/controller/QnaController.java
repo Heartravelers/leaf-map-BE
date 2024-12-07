@@ -122,21 +122,20 @@ public class QnaController {
         }
     }
 
-    @Operation(summary = "답변 조회")
+    @Operation(summary = "문의 상세 및 답변 조회")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자 또는 리소스를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping("/inquiry/{inquiryId}")
-    public ResponseEntity<ApiResponse<List<AnswerResponseDto>>> getAnswers(@PathVariable("inquiryId") Long inquiryId,
+    public ResponseEntity<ApiResponse<AnswerResponseDto>> getAnswers(@PathVariable("inquiryId") Long inquiryId,
                                                      @RequestHeader("Authorization") String authorization) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
             qnaService.validateUser(userId, inquiry);
-            List<AnswerResponseDto> answers = inquiry.getAnswers().stream().map(AnswerResponseDto::new).toList();
-            return ResponseEntity.ok(ApiResponse.onSuccess(answers));
+            return ResponseEntity.ok(ApiResponse.onSuccess(new AnswerResponseDto(inquiry)));
         } catch (CustomException e) {
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch (Exception e) {

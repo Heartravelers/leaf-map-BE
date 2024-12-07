@@ -42,8 +42,9 @@ public class Inquiry extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers = new ArrayList<>();
+    @OneToOne(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
 
     public Inquiry(InquiryRequestDto inquiryRequestDto, User user) {
         this.inquiryTitle = inquiryRequestDto.getInquiryTitle();
