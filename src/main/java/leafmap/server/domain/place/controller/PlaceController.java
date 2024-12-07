@@ -56,7 +56,7 @@ public class PlaceController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 리소스를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @GetMapping("/place/{placeId}")
+    @GetMapping("/places/{placeId}")
     public ResponseEntity<ApiResponse<PlaceDetailResponseDto>> getPlaceDetail(@PathVariable("placeId") String placeId) {
         try {
             PlaceDetailResponseDto response = placeService.findById(placeId);
