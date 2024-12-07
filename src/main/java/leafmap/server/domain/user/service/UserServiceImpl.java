@@ -35,13 +35,6 @@ public class UserServiceImpl implements UserService {
             } else {
                 followRepository.save(new Follow(follower, following));
             }
-//            List<Follow> followList = follower.getFollowings();
-//            for(Follow follow : followList) {
-//                if(follow.getFollowing().equals(following)) {
-//                    followRepository.delete(follow);
-//                    return;
-//                }
-//            }
             return;
         } throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }

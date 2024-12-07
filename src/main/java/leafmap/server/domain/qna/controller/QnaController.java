@@ -1,6 +1,9 @@
 package leafmap.server.domain.qna.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.qna.dto.AnswerResponseDto;
 import leafmap.server.domain.qna.dto.InquiryRequestDto;
@@ -27,6 +30,11 @@ public class QnaController {
     QnaService qnaService;
 
     @Operation(summary = "문의하기")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     @PostMapping("/inquiry")
     public ResponseEntity<ApiResponse<?>> createInquiry(@RequestBody InquiryRequestDto inquiryRequestDto,
                                                         @RequestHeader("Authorization") String authorization){
@@ -35,16 +43,20 @@ public class QnaController {
             qnaService.save(inquiryRequestDto, userId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        } return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 
     @Operation(summary = "문의 내역 조회")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @GetMapping("/inquiry")
-    public ResponseEntity<ApiResponse<?>> getInquiries(@RequestParam(required = false) String startDate,
+    public ResponseEntity<ApiResponse<List<InquiryResponseDto>>> getInquiries(@RequestParam(required = false) String startDate,
                                                        @RequestParam(required = false) String endDate,
                                                        @RequestHeader("Authorization") String authorization) {
         try {
@@ -52,16 +64,22 @@ public class QnaController {
             List<InquiryResponseDto> inquiries = qnaService.findAllByUserId(userId, startDate, endDate);
             return ResponseEntity.ok(ApiResponse.onSuccess(inquiries));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch(DateTimeParseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorCode.BAD_REQUEST.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.onFailure(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
         }
     }
 
     @Operation(summary = "문의 수정")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden - 금지된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자 또는 리소스를 찾을 수 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     @PatchMapping("/inquiry/{inquiryId}")
     public ResponseEntity<ApiResponse<?>> updateInquiry(@PathVariable("inquiryId") Long inquiryId,
                                                         @RequestBody InquiryRequestDto inquiryRequestDto,
@@ -73,14 +91,20 @@ public class QnaController {
             qnaService.update(inquiry, inquiryRequestDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse()); // 403 404
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage())); // 403 404
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
         }
     }
 
     @Operation(summary = "문의 삭제")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden - 금지된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자 또는 리소스를 찾을 수 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     @DeleteMapping("/inquiry/{inquiryId}")
     public ResponseEntity<ApiResponse<?>> deleteInquiry(@PathVariable("inquiryId") Long inquiryId,
                                                         @RequestHeader("Authorization") String authorization) {
@@ -91,29 +115,32 @@ public class QnaController {
             qnaService.delete(inquiry);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse()); // 403 404
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage())); // 403 404
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
         }
     }
 
-    @Operation(summary = "답변 조회")
+    @Operation(summary = "문의 상세 및 답변 조회")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자 또는 리소스를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @GetMapping("/inquiry/{inquiryId}")
-    public ResponseEntity<ApiResponse<?>> getAnswers(@PathVariable("inquiryId") Long inquiryId,
+    public ResponseEntity<ApiResponse<AnswerResponseDto>> getAnswers(@PathVariable("inquiryId") Long inquiryId,
                                                      @RequestHeader("Authorization") String authorization) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             Inquiry inquiry = qnaService.findByInquiryId(inquiryId);
             qnaService.validateUser(userId, inquiry);
-            List<AnswerResponseDto> answers = inquiry.getAnswers().stream().map(AnswerResponseDto::new).toList();
-            return ResponseEntity.ok(ApiResponse.onSuccess(answers));
+            return ResponseEntity.ok(ApiResponse.onSuccess(new AnswerResponseDto(inquiry)));
         } catch (CustomException e) {
-            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
+            return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(ApiResponse.onFailure(e.getErrorCode().getCode(), e.getErrorCode().getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorCode.INTERNAL_SERVER_ERROR.getErrorResponse());
+        } return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 
 }
