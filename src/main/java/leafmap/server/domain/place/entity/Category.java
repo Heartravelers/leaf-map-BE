@@ -1,5 +1,8 @@
 package leafmap.server.domain.place.entity;
 
 public enum Category {
-    CATEGORY
+    cafe,
+    restaurant,
+    spot,
+    leisure
 }
