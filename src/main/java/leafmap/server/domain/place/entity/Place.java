@@ -19,9 +19,8 @@ import java.util.List;
 @Table(name = "place")
 public class Place extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "place_id", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;

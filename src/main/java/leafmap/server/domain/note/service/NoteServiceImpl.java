@@ -4,7 +4,9 @@ import jakarta.transaction.Transactional;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
+import leafmap.server.domain.note.entity.NoteImage;
 import leafmap.server.domain.note.repository.CategoryRepository;
+import leafmap.server.domain.note.repository.NoteImageRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.note.repository.RegionFilterRepository;
 import leafmap.server.domain.place.entity.Place;
@@ -13,9 +15,14 @@ import leafmap.server.domain.user.entity.User;
 import leafmap.server.domain.user.repository.UserRepository;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.exception.CustomException;
+import leafmap.server.global.util.S3Provider;
+import leafmap.server.global.util.s3.dto.S3UploadRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,17 +37,22 @@ public class NoteServiceImpl implements NoteService{
     private RegionFilterRepository regionFilterRepository;
     private RegionFilterServiceImpl regionFilterService;
     private CategoryRepository categoryRepository;
+    private NoteImageRepository noteImageRepository;
+    private final S3Provider s3Provider;
 
     @Autowired
     public NoteServiceImpl(NoteRepository noteRepository, PlaceRepository placeRepository,
                            UserRepository userRepository, RegionFilterRepository regionFilterRepository,
-                           RegionFilterServiceImpl regionFilterService, CategoryRepository categoryRepository){
+                           RegionFilterServiceImpl regionFilterService, CategoryRepository categoryRepository,
+                           NoteImageRepository noteImageRepository, S3Provider s3Provider){
         this.noteRepository = noteRepository;
         this.placeRepository = placeRepository;
         this.userRepository = userRepository;
         this.regionFilterRepository = regionFilterRepository;
         this.regionFilterService = regionFilterService;
         this.categoryRepository = categoryRepository;
+        this.noteImageRepository = noteImageRepository;
+        this.s3Provider = s3Provider;
     }
 
     @Override     //노트 상세 조회
@@ -65,7 +77,7 @@ public class NoteServiceImpl implements NoteService{
 
 
     @Override   //노트 생성
-    public void postNote(Long userId, NoteDto noteDto){
+    public void postNote(Long userId, NoteDto noteDto, List<MultipartFile> imageFiles){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
@@ -80,26 +92,40 @@ public class NoteServiceImpl implements NoteService{
         if (optionalPlace.isEmpty()){
             Place place = Place.builder()
                     .id(noteDto.getPlaceId())
-                    .name(noteDto.getPlaceName())
-                    .address(noteDto.getAddress())
                     .regionName(region).build();
             placeRepository.save(place);
         }
 
         Note note = Note.builder()
                 .title(noteDto.getTitle())
-                .date(noteDto.getDate())
+                .date(LocalDate.now())
                 .content(noteDto.getContent())
                 .isPublic(noteDto.getIsPublic())
-                .noteImages(noteDto.getNoteImages())
-                .categoryFilter(noteDto.getCategoryFilter())
+                .countHeart(0)
+                .countVisit(0) //** regionFilter 유저마다 자동생성할지 고민
+                .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get())
                 .place(optionalPlace.get())
                 .user(optionalUser.get()).build();
         noteRepository.save(note);
+
+        //이미지 로직 - s3 업로드
+        S3UploadRequest request = S3UploadRequest.builder()
+                .userId(userId)
+                .dirName(note.getId().toString()).build();
+
+        for (MultipartFile file : imageFiles){
+            String url = s3Provider.uploadFile(file, request);
+            NoteImage noteImage = NoteImage.builder()
+                    .imageUrl(url)
+                    .note(note).build();
+            noteImageRepository.save(noteImage);
+        }
+
         regionFilterService.increaseRegionNoteCount(optionalUser.get(), region);
     }
+
     @Override   //노트 수정
-    public void updateNote(Long userId, Long noteId, NoteDto noteDto){
+    public void updateNote(Long userId, Long noteId, NoteDto noteDto, List<MultipartFile> imageFiles, List<Long> imageIdsToDelete){
         Optional<Note> optionalNote = noteRepository.findById(noteId);
         if (optionalNote.isEmpty()){
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
@@ -109,15 +135,43 @@ public class NoteServiceImpl implements NoteService{
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        Note note = Note.builder()
+        Note existNote = optionalNote.get();
+        Note newNote = Note.builder()
                 .title(noteDto.getTitle())
-                .date(noteDto.getDate())
                 .content(noteDto.getContent())
                 .isPublic(noteDto.getIsPublic())
-                .noteImages(noteDto.getNoteImages())
-                .categoryFilter(noteDto.getCategoryFilter()).build();
-        noteRepository.save(note);
+                .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get()).build();
+        noteRepository.save(newNote);
+
+        //이미지 로직 - s3 수정
+
+        //**기존 이미지 삭제
+//        if (imageIdsToDelete!=null && !imageIdsToDelete.isEmpty()){
+//            for (Long imageId : imageIdsToDelete) {
+//                Optional<NoteImage> existingNoteImage = noteImageRepository.findById(imageId);
+//                existingNoteImage.ifPresent(noteImage -> {
+//                    noteImage.getImageUrl().forEach(s3Provider::deleteFile); //**s3Provider 에서 deleteFile 구현해야함
+//                    noteImageRepository.delete(noteImage);
+//                });
+//            }
+//        }
+
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            S3UploadRequest request = S3UploadRequest.builder()
+                    .userId(userId)
+                    .dirName(newNote.getId().toString()).build();
+
+            for (MultipartFile file : imageFiles) {
+                String url = s3Provider.uploadFile(file, request);
+                NoteImage noteImage = NoteImage.builder()
+                        .imageUrl(url)
+                        .note(newNote).build();
+                noteImageRepository.save(noteImage);
+            }
+        }
+
     }
+
     @Override   //노트 삭제
     public void deleteNote(Long userId, Long noteId){
         Optional<Note> optionalNote = noteRepository.findById(noteId);

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -51,10 +52,11 @@ public class NoteController {
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
     public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader("Authorization") String authorization,
-                                                   @RequestBody NoteDto noteDto){
+                                                   @RequestBody NoteDto noteDto,
+                                                   @RequestPart List<MultipartFile> imageFile){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            noteService.postNote(userId, noteDto);
+            noteService.postNote(userId, noteDto, imageFile);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){
@@ -71,10 +73,12 @@ public class NoteController {
     @PutMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("noteId") Long noteId,
-                                                     @Valid @RequestBody NoteDto noteDto){
+                                                     @Valid @RequestBody NoteDto noteDto,
+                                                     @RequestPart List<MultipartFile> imageFile,
+                                                     @RequestBody List<Long> imageIdToDelete){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            noteService.updateNote(userId, noteId, noteDto);
+            noteService.updateNote(userId, noteId, noteDto, imageFile, imageIdToDelete);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
