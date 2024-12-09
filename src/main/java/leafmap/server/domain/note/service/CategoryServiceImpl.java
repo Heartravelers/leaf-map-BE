@@ -95,14 +95,16 @@ public class CategoryServiceImpl implements CategoryService{
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        CategoryFilter category = CategoryFilter.builder()
-                .name(categoryDto.getName())
-                .color(categoryDto.getColor()).build();
-        categoryRepository.save(category);
+        CategoryFilter newCategory = optionalCategory.get().toBuilder()
+                .name(categoryDto.getName()) // 수정할 필드만 변경
+                .color(categoryDto.getColor()) // 수정할 필드만 변경
+                .build(); // 새로운 객체를 빌더로 생성
+
+        categoryRepository.save(newCategory);
     }
 
     @Override
-    public void deleteCategory(Long userId, Long folderId){  //지역 필터링
+    public void deleteCategory(Long userId, Long folderId){  //폴더 삭제
         Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
         if (optionalCategory.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
@@ -111,18 +113,18 @@ public class CategoryServiceImpl implements CategoryService{
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        categoryRepository.deleteById(folderId);
+        categoryRepository.deleteById(folderId); //폴더와 함께 챌린지도 함께 삭제(Cascade.All 설정)
 
-        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryFilter(optionalCategory.get());
-        if (optionalChallenge.isEmpty()){
-            throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND);
-        }
-
-        categoryChallengeRepository.deleteById(optionalChallenge.get().getId());
+//        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryFilter(optionalCategory.get());
+//        if (optionalChallenge.isEmpty()){
+//            throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND);
+//        }
+//
+//        categoryChallengeRepository.deleteById(optionalChallenge.get().getId());
     }
 
     @Override
-    public List<NoteDto> filterNotes(Long userId, String regionName){
+    public List<NoteDto> filterNotes(Long userId, String regionName){ //지역 필터링
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);

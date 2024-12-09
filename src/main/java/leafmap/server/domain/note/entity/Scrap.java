@@ -30,7 +30,8 @@ public class Scrap {
     @JsonBackReference
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+    //미사용 필드
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "place_id", nullable = false)
+//    private Place place;
 }

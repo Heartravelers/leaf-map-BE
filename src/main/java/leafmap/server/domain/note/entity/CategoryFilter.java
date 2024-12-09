@@ -45,4 +45,12 @@ public class CategoryFilter extends BaseEntity {
     @OneToOne(mappedBy = "categoryFilter", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private CategoryChallenge categoryChallenge;
+
+    public CategoryFilterBuilder toBuilder() {
+        return builder()
+                .id(this.id)
+                .name(this.name)
+                .color(this.color)
+                .user(this.user);  // user는 변경되지 않음
+    }
 }

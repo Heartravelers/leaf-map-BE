@@ -38,14 +38,16 @@ public class ScrapServiceImpl implements ScrapService{
         }
         Note note = optionalNote.get();
 
-        Optional<Scrap> optionalScrap = scrapRepository.findById(noteId);
-        if (optionalScrap.get().getStatus()){
-            throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
-        }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
+
+        Optional<Scrap> optionalScrap = scrapRepository.findByNoteIdAndUser(noteId, optionalUser.get());
+        if (optionalScrap.isPresent()){
+            throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
 
         note.increaseHeart();
         noteRepository.save(note);
@@ -53,7 +55,7 @@ public class ScrapServiceImpl implements ScrapService{
         Scrap scrap = Scrap.builder()
                 .note(note)
                 .user(optionalUser.get())
-                .status(Boolean.TRUE).build();
+                .status(true).build();
 
         scrapRepository.save(scrap);
     }
@@ -66,21 +68,21 @@ public class ScrapServiceImpl implements ScrapService{
         }
         Note note = optionalNote.get();
 
-        if (!Objects.equals(userId, note.getUser().getId())){
-            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
-        }
-
-        Optional<Scrap> optionalScrap = scrapRepository.findById(noteId);
-        if (!(optionalScrap.get().getStatus())){
-            throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
-        }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
+        if (!Objects.equals(userId, note.getUser().getId())){
+            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+        }
+
+        Optional<Scrap> optionalScrap = scrapRepository.findByNoteIdAndUser(noteId, optionalUser.get());
+        if (optionalScrap.isEmpty()){
+            throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
         note.decreaseHeart();
-        noteRepository.save(note);
 
         scrapRepository.deleteById(noteId);
     }

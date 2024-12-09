@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RegionFilterRepository extends JpaRepository<RegionFilter, Long> {
     RegionFilter findByRegionName(String regionName);
+    RegionFilter findByUserAndRegionName(User user, String regionName);
     @Modifying
     @Query("UPDATE RegionFilter rf SET rf.countNote = rf.countNote + 1 WHERE rf.user = :user AND rf.regionName = :regionName")
     void increaseCountNote(@Param("user") User user, @Param("regionName") String regionName);

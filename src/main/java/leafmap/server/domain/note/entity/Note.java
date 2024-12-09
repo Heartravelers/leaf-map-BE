@@ -78,4 +78,12 @@ public class Note extends BaseEntity {
     public void decreaseHeart() { // deleteScrap 에서 사용
         this.countHeart--;
     }
+
+    public NoteBuilder toBuilder() {
+        return builder()
+                .title(this.title)
+                .content(this.content)
+                .isPublic(this.isPublic)
+                .categoryFilter(this.categoryFilter);
+    }
 }

@@ -75,7 +75,7 @@ public class NoteController {
                                                      @PathVariable("noteId") Long noteId,
                                                      @RequestPart(value = "noteDto") NoteDto noteDto,
                                                      @RequestPart(value = "imageFile") List<MultipartFile> imageFile,
-                                                     @RequestBody List<Long> imageIdToDelete){
+                                                     @RequestPart(value = "imageIdToDelete") List<Long> imageIdToDelete){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             noteService.updateNote(userId, noteId, noteDto, imageFile, imageIdToDelete);

@@ -1,6 +1,7 @@
 package leafmap.server.domain.note.service;
 
 import jakarta.transaction.Transactional;
+import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.note.dto.NoteDto;
 import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
@@ -88,8 +89,8 @@ public class NoteServiceImpl implements NoteService{
         }
         System.out.println("Found user: " + optionalUser.get().getUsername());  // 로그로 확인(**테스트)
 
-        String region = regionFilterService.getRegion(noteDto.getAddress());
-        if (Objects.equals(region, "")){
+        String regionName = regionFilterService.getRegion(noteDto.getAddress());
+        if (Objects.equals(regionName, "")){
             throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
@@ -97,7 +98,7 @@ public class NoteServiceImpl implements NoteService{
         if (optionalPlace.isEmpty()){
             Place place = Place.builder()
                     .id(noteDto.getPlaceId())
-                    .regionName(region).build();
+                    .regionName(regionName).build();
             placeRepository.save(place);
         }
 
@@ -108,6 +109,7 @@ public class NoteServiceImpl implements NoteService{
                 .isPublic(noteDto.getIsPublic())
                 .countHeart(0)
                 .countVisit(0)
+                .regionFilter(regionFilterRepository.findByUserAndRegionName(optionalUser.get(), regionName))
                 .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get())
                 .place(optionalPlace.get())
                 .user(optionalUser.get()).build();
@@ -126,7 +128,7 @@ public class NoteServiceImpl implements NoteService{
             noteImageRepository.save(noteImage);
         }
 
-        regionFilterService.increaseRegionNoteCount(optionalUser.get(), region);
+        regionFilterService.increaseRegionNoteCount(optionalUser.get(), regionName);
     }
 
     @Override   //노트 수정
@@ -140,12 +142,12 @@ public class NoteServiceImpl implements NoteService{
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        Note existNote = optionalNote.get();
-        Note newNote = Note.builder()
+        Note newNote = optionalNote.get().toBuilder()
                 .title(noteDto.getTitle())
                 .content(noteDto.getContent())
                 .isPublic(noteDto.getIsPublic())
                 .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get()).build();
+
         noteRepository.save(newNote);
 
         //이미지 로직 - s3 수정

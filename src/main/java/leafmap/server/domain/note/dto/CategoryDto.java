@@ -14,31 +14,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDto {  //categoryFilter 에 대한 dto
-    private Long id;
-    @NotNull(message = "Category name must not be null")
+//    private Long id;
+    //@NotNull(message = "Category name must not be null")
     private String name;
-    @NotNull(message = "Category color must not be null")
+    //@NotNull(message = "Category color must not be null")
 
     private String color;
-    @NotNull(message = "IsDefault must not be null")
+    //@NotNull(message = "IsDefault must not be null")
 
-    private Boolean isDefault;
-    private String code;
+//    private Boolean isDefault;
+//    private String code;
     private Integer countNote;
-    @NotNull(message = "User must not be null")
+    //@NotNull(message = "User must not be null")
 
-    private User user;
-    @NotNull(message = "Challenge must not be null")
+//    private User user;
+//    @NotNull(message = "Challenge must not be null")
 
-    private CategoryChallenge categoryChallenge;
 
-    public CategoryDto(@NotNull CategoryFilter categoryFilter){
-        this.id = categoryFilter.getId();
+    public CategoryDto(CategoryFilter categoryFilter){ //Not null 어노테이션 잠시 삭제
         this.color = categoryFilter.getColor();
-        this.categoryChallenge = categoryFilter.getCategoryChallenge();
-        this.code = categoryFilter.getCode();
         this.countNote = categoryFilter.getCountNote();
         this.name = categoryFilter.getName();
-        this.user = categoryFilter.getUser();
     }
 }
