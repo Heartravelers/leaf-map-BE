@@ -5,32 +5,28 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import leafmap.server.domain.note.dto.CategoryDto;
+import leafmap.server.domain.note.dto.FolderDto;
 import leafmap.server.domain.note.dto.NoteDto;
-import leafmap.server.domain.note.service.CategoryServiceImpl;
+import leafmap.server.domain.note.service.FolderServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
 import leafmap.server.global.common.SuccessCode;
 import leafmap.server.global.common.exception.CustomException;
-import leafmap.server.global.oauth2.user.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @Tag(name = "Folder", description = "Folder 관련 API")
-public class CategoryController {
-    private CategoryServiceImpl categoryService;
+public class FolderController {
+    private FolderServiceImpl folderService;
 
     @Autowired
-    private CategoryController(CategoryServiceImpl categoryService){
-        this.categoryService = categoryService;
+    private FolderController(FolderServiceImpl folderService){
+        this.folderService = folderService;
     }
 
     @Operation(summary = "폴더 목록 조회")
@@ -40,10 +36,10 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping("/folder/{userId}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable("userId") Long userId){
+    public ResponseEntity<ApiResponse<?>> getFolder(@PathVariable("userId") Long userId){
         try{
-            List<CategoryDto> categories = categoryService.getCategory(userId); //**폴더 목록 비공개 있다면 고쳐야 함(폴더 내 노트목록 api 참고) - serviceImpl 도
-            return ResponseEntity.ok(ApiResponse.onSuccess(categories));
+            List<FolderDto> folders = folderService.getFolder(userId); //**폴더 목록 비공개 있다면 고쳐야 함(폴더 내 노트목록 api 참고) - serviceImpl 도
+            return ResponseEntity.ok(ApiResponse.onSuccess(folders));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -61,11 +57,11 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @PostMapping("/folder")
-    public ResponseEntity<ApiResponse<?>> makeCategory(@RequestHeader("Authorization") String authorization,
-                                                       @RequestBody CategoryDto categoryDto){
+    public ResponseEntity<ApiResponse<?>> makeFolder(@RequestHeader("Authorization") String authorization,
+                                                       @RequestBody FolderDto folderDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            categoryService.makeCategory(userId, categoryDto);
+            folderService.makeFolder(userId, folderDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){ //유저 없음
@@ -87,12 +83,12 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @PatchMapping("/folder/{folderId}")
-    public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<ApiResponse<?>> updateFolder(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("folderId") Long folderId,
-                                                     @RequestBody CategoryDto categoryDto){
+                                                     @RequestBody FolderDto folderDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            categoryService.updateCategory(userId, folderId, categoryDto);
+            folderService.updateFolder(userId, folderId, folderDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundCategoryException e){   //folder 존재하지 않음
@@ -113,11 +109,11 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @DeleteMapping("/folder/{folderId}")
-    public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<ApiResponse<?>> deleteFolder(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("folderId") Long folderId) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            categoryService.deleteCategory(userId, folderId);
+            folderService.deleteFolder(userId, folderId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
@@ -141,10 +137,10 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping("/folder/{userId}/{regionName}")
-    public ResponseEntity<ApiResponse<?>> getNote(@PathVariable("userId") Long userId,
+    public ResponseEntity<ApiResponse<?>> regionFiltering(@PathVariable("userId") Long userId,
                                                   @PathVariable("regionName") String regionName){
         try{
-            List<NoteDto> notes = categoryService.filterNotes(userId, regionName);
+            List<NoteDto> notes = folderService.filterNotes(userId, regionName);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

@@ -13,13 +13,11 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "CategoryFilter")
-public class CategoryFilter extends BaseEntity {
-
-    //folder 엔티티
+@Table(name = "Folder")
+public class Folder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id", nullable = false)
+    @Column(name = "folder_id", nullable = false)
     private Long id;
 
     @Column(name = "name")
@@ -27,9 +25,6 @@ public class CategoryFilter extends BaseEntity {
 
     @Column(name = "color")
     private String color;
-
-    @Column(name = "is_default")
-    private Boolean isDefault; //미사용
 
     @Column(name = "code")
     private String code;
@@ -46,7 +41,7 @@ public class CategoryFilter extends BaseEntity {
     @JsonManagedReference
     private CategoryChallenge categoryChallenge;
 
-    public CategoryFilterBuilder toBuilder() {
+    public FolderBuilder toBuilder() {
         return builder()
                 .id(this.id)
                 .name(this.name)

@@ -1,18 +1,11 @@
 package leafmap.server.domain.note.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
-import leafmap.server.domain.note.entity.CategoryFilter;
 import leafmap.server.domain.note.entity.Note;
-import leafmap.server.domain.note.entity.NoteImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Builder
@@ -27,7 +20,7 @@ public class NoteDto {
     private String content;
     private Boolean isPublic;
     private String address;
-    private String categoryName;
+    private String folderName;
 
     public NoteDto(Note note){ //** not null 어노테이션 삭제
         this.placeId = note.getPlace().getId();
@@ -35,6 +28,6 @@ public class NoteDto {
         this.content = note.getContent();
         this.isPublic = note.getIsPublic();
         this.address = note.getPlace().getAddress();
-        this.categoryName = note.getCategoryFilter().getName();
+        this.folderName = note.getFolder().getName();
     }
 }

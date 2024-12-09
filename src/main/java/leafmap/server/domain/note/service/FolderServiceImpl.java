@@ -3,12 +3,12 @@ package leafmap.server.domain.note.service;
 import jakarta.transaction.Transactional;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
-import leafmap.server.domain.note.dto.CategoryDto;
+import leafmap.server.domain.note.dto.FolderDto;
 import leafmap.server.domain.note.dto.NoteDto;
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
-import leafmap.server.domain.note.repository.CategoryRepository;
+import leafmap.server.domain.note.repository.FolderRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.note.repository.RegionFilterRepository;
 import leafmap.server.domain.user.entity.User;
@@ -25,95 +25,95 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class CategoryServiceImpl implements CategoryService{
+public class FolderServiceImpl implements FolderService {
     UserRepository userRepository;
-    CategoryRepository categoryRepository;
+    FolderRepository folderRepository;
     CategoryChallengeRepository categoryChallengeRepository;
     NoteRepository noteRepository;
     RegionFilterRepository regionFilterRepository;
 
     @Autowired
-    public CategoryServiceImpl(UserRepository userRepository, CategoryRepository categoryRepository,
-                               CategoryChallengeRepository categoryChallengeRepository, NoteRepository noteRepository,
-                               RegionFilterRepository regionFilterRepository){
+    public FolderServiceImpl(UserRepository userRepository, FolderRepository folderRepository,
+                             CategoryChallengeRepository categoryChallengeRepository, NoteRepository noteRepository,
+                             RegionFilterRepository regionFilterRepository){
         this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
+        this.folderRepository = folderRepository;
         this.categoryChallengeRepository = categoryChallengeRepository;
         this.noteRepository = noteRepository;
         this.regionFilterRepository = regionFilterRepository;
     }
 
     @Override
-    public List<CategoryDto> getCategory(Long userId){ //폴더 목록 조회
+    public List<FolderDto> getFolder(Long userId){ //폴더 목록 조회
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
-        List<CategoryFilter> categoryFilters = categoryRepository.findByUser(optionalUser.get());
+        List<Folder> folders = folderRepository.findByUser(optionalUser.get());
 
-        return categoryFilters.stream()
-                .map(CategoryDto::new)
+        return folders.stream()
+                .map(FolderDto::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void makeCategory(Long userId, CategoryDto categoryDto){ //폴더 생성
+    public void makeFolder(Long userId, FolderDto folderDto){ //폴더 생성
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
-        CategoryFilter categoryFilter = CategoryFilter.builder()
-                .name(categoryDto.getName())
-                .color(categoryDto.getColor())
+        Folder folder = Folder.builder()
+                .name(folderDto.getName())
+                .color(folderDto.getColor())
                 .user(optionalUser.get()).build();
 
-        categoryRepository.save(categoryFilter);
+        folderRepository.save(folder);
 
-        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByUserAndCategoryFilter(optionalUser.get(), categoryFilter);
+        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByUserAndFolder(optionalUser.get(), folder);
         if (optionalChallenge.isPresent()){
             throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST); //이미 존재
         }
 
         CategoryChallenge categoryChallenge = CategoryChallenge.builder()
                 .user(optionalUser.get())
-                .categoryFilter(categoryFilter)
+                .folder(folder)
                 .countStamp(0).build();
 
         categoryChallengeRepository.save(categoryChallenge);
     }
 
     @Override
-    public void updateCategory(Long userId, Long folderId, CategoryDto categoryDto){ //폴더 수정
-        Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
-        if (optionalCategory.isEmpty()){
+    public void updateFolder(Long userId, Long folderId, FolderDto folderDto){ //폴더 수정
+        Optional<Folder> optionalFolder = folderRepository.findById(folderId);
+        if (optionalFolder.isEmpty()){
             throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
         }
 
-        if (!Objects.equals(userId, optionalCategory.get().getUser().getId())){
+        if (!Objects.equals(userId, optionalFolder.get().getUser().getId())){
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        CategoryFilter newCategory = optionalCategory.get().toBuilder()
-                .name(categoryDto.getName()) // 수정할 필드만 변경
-                .color(categoryDto.getColor()) // 수정할 필드만 변경
-                .build(); // 새로운 객체를 빌더로 생성
+        Folder newFolder = optionalFolder.get().toBuilder()
+                .name(folderDto.getName())
+                .color(folderDto.getColor())
+                .build();
 
-        categoryRepository.save(newCategory);
+        folderRepository.save(newFolder);
     }
 
     @Override
-    public void deleteCategory(Long userId, Long folderId){  //폴더 삭제
-        Optional<CategoryFilter> optionalCategory = categoryRepository.findById(folderId);
-        if (optionalCategory.isEmpty()){
+    public void deleteFolder(Long userId, Long folderId){  //폴더 삭제
+        Optional<Folder> optionalFolder = folderRepository.findById(folderId);
+        if (optionalFolder.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
         }
-        if (!Objects.equals(userId, optionalCategory.get().getUser().getId())){
+        if (!Objects.equals(userId, optionalFolder.get().getUser().getId())){
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        categoryRepository.deleteById(folderId); //폴더와 함께 챌린지도 함께 삭제(Cascade.All 설정)
+        folderRepository.deleteById(folderId); //폴더와 함께 챌린지도 함께 삭제(Cascade.All 설정)
 
 //        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByCategoryFilter(optionalCategory.get());
 //        if (optionalChallenge.isEmpty()){

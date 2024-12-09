@@ -61,7 +61,7 @@ public class Note extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private CategoryFilter categoryFilter;
+    private Folder folder;
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -84,6 +84,6 @@ public class Note extends BaseEntity {
                 .title(this.title)
                 .content(this.content)
                 .isPublic(this.isPublic)
-                .categoryFilter(this.categoryFilter);
+                .folder(this.folder);
     }
 }

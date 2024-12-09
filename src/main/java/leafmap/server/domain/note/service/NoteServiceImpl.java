@@ -1,12 +1,11 @@
 package leafmap.server.domain.note.service;
 
 import jakarta.transaction.Transactional;
-import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.note.dto.NoteDto;
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.NoteImage;
-import leafmap.server.domain.note.repository.CategoryRepository;
+import leafmap.server.domain.note.repository.FolderRepository;
 import leafmap.server.domain.note.repository.NoteImageRepository;
 import leafmap.server.domain.note.repository.NoteRepository;
 import leafmap.server.domain.note.repository.RegionFilterRepository;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,21 +35,21 @@ public class NoteServiceImpl implements NoteService{
     private UserRepository userRepository;
     private RegionFilterRepository regionFilterRepository;
     private RegionFilterServiceImpl regionFilterService;
-    private CategoryRepository categoryRepository;
+    private FolderRepository folderRepository;
     private NoteImageRepository noteImageRepository;
     private final S3Provider s3Provider;
 
     @Autowired
     public NoteServiceImpl(NoteRepository noteRepository, PlaceRepository placeRepository,
                            UserRepository userRepository, RegionFilterRepository regionFilterRepository,
-                           RegionFilterServiceImpl regionFilterService, CategoryRepository categoryRepository,
+                           RegionFilterServiceImpl regionFilterService, FolderRepository folderRepository,
                            NoteImageRepository noteImageRepository, S3Provider s3Provider){
         this.noteRepository = noteRepository;
         this.placeRepository = placeRepository;
         this.userRepository = userRepository;
         this.regionFilterRepository = regionFilterRepository;
         this.regionFilterService = regionFilterService;
-        this.categoryRepository = categoryRepository;
+        this.folderRepository = folderRepository;
         this.noteImageRepository = noteImageRepository;
         this.s3Provider = s3Provider;
     }
@@ -105,7 +103,7 @@ public class NoteServiceImpl implements NoteService{
                 .countHeart(0)
                 .countVisit(0)
                 .regionFilter(regionFilterRepository.findByUserAndRegionName(optionalUser.get(), regionName))
-                .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get())
+                .folder(folderRepository.findByName(noteDto.getFolderName()).get())
                 .place(optionalPlace.get())
                 .user(optionalUser.get()).build();
         noteRepository.save(note);
@@ -141,7 +139,7 @@ public class NoteServiceImpl implements NoteService{
                 .title(noteDto.getTitle())
                 .content(noteDto.getContent())
                 .isPublic(noteDto.getIsPublic())
-                .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get()).build();
+                .folder(folderRepository.findByName(noteDto.getFolderName()).get()).build();
 
         noteRepository.save(newNote);
 
@@ -200,12 +198,12 @@ public class NoteServiceImpl implements NoteService{
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
-        Optional<CategoryFilter> optionalCategory = categoryRepository.findByName(categoryName);
-        if (optionalCategory.isEmpty()){
+        Optional<Folder> optionalFolder = folderRepository.findByName(categoryName);
+        if (optionalFolder.isEmpty()){
             throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
         }
 
-        List<Note> notes = noteRepository.findByUserAndCategoryFilter(optionalUser.get(), optionalCategory.get()); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
+        List<Note> notes = noteRepository.findByUserAndFolder(optionalUser.get(), optionalFolder.get()); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
 
         return notes.stream()
                 .map(NoteDto::new)
