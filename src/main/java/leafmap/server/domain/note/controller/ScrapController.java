@@ -1,6 +1,9 @@
 package leafmap.server.domain.note.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.note.service.ScrapServiceImpl;
 import leafmap.server.global.common.ApiResponse;
@@ -23,6 +26,13 @@ public class ScrapController {
     }
 
     @Operation(summary = "하트 추가 및 스크랩")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad request - 잘못된 요청입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 요청받은 리소스를 찾을 수 없습니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @PostMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> makeScarp(@RequestHeader("Authorization") String authorization,
                                                     @PathVariable("noteId") Long noteId){
@@ -45,6 +55,14 @@ public class ScrapController {
         }    }
 
     @Operation(summary = "하트 삭제 및 스크랩 취소")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad request - 잘못된 요청입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden - 금지된 요청입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 요청받은 리소스를 찾을 수 없습니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
     @DeleteMapping({"/note/{noteId}", "/note/{noteId}/scrap"})
     public ResponseEntity<ApiResponse<?>> deleteScrap(@RequestHeader("Authorization") String authorization,
                                                       @PathVariable("noteId") Long noteId){
