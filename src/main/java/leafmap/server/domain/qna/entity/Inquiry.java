@@ -1,6 +1,7 @@
 package leafmap.server.domain.qna.entity;
 
 import jakarta.persistence.*;
+import leafmap.server.domain.qna.dto.InquiryRequestDto;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import lombok.*;
@@ -21,6 +22,11 @@ public class Inquiry extends BaseEntity {
     @Column(name = "inquiry_id", nullable = false)
     private Long id;
 
+    @Setter
+    @Column(name = "inquiry_title")
+    private String inquiryTitle;
+
+    @Setter
     @Column(name = "inquiry_text", columnDefinition = "text")
     private String inquiryText;
 
@@ -28,10 +34,23 @@ public class Inquiry extends BaseEntity {
     @Column(name = "status")
     private InquiryStatus status;
 
+    @Setter
+    @Column(name = "email")
+    private String email;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> answers = new ArrayList<>();
+    @OneToOne(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "answer_id")
+    private Answer answer;
+
+    public Inquiry(InquiryRequestDto inquiryRequestDto, User user) {
+        this.inquiryTitle = inquiryRequestDto.getInquiryTitle();
+        this.inquiryText = inquiryRequestDto.getInquiryText();
+        this.status = InquiryStatus.PENDING;
+        this.email = inquiryRequestDto.getEmail();
+        this.user = user;
+    }
 }

@@ -31,8 +31,7 @@ public class Challenge extends BaseEntity {
     @Column(name = "have_visited")
     private Boolean haveVisited;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 }

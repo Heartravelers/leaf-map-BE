@@ -3,6 +3,7 @@ package leafmap.server.domain.qna.entity;
 import leafmap.server.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 @Entity
 @Builder
 @Getter
@@ -19,7 +20,7 @@ public class Answer extends BaseEntity {
     @Column(name = "answer_text", columnDefinition = "text")
     private String answerText;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inquiry_id", nullable = false)
     private Inquiry inquiry;
 }

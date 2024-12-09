@@ -47,6 +47,8 @@ dependencies {
 
 	// JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'  // MariaDB 드라이버 추가
+	implementation 'org.hibernate:hibernate-core:6.2.0.Final' //추가
 
 	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -66,6 +68,12 @@ dependencies {
 
 	// Slf4j
 	implementation 'org.slf4j:slf4j-api:2.0.7'
+
+	// WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Jackson
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
