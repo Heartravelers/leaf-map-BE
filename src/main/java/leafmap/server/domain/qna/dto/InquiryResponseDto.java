@@ -12,14 +12,11 @@ public class InquiryResponseDto {
 
     private String title;
 
-    private String text;
-
     private String createdAt;
 
     public InquiryResponseDto(Inquiry inquiry) {
         this. id = inquiry.getId();
         this.title = inquiry.getInquiryTitle();
-        this.text = inquiry.getInquiryText();
         this.createdAt = inquiry.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
     }
 

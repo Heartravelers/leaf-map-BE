@@ -69,6 +69,12 @@ dependencies {
 	// Slf4j
 	implementation 'org.slf4j:slf4j-api:2.0.7'
 
+	// WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Jackson
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

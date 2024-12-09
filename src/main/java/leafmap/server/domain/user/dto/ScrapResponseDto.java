@@ -3,9 +3,11 @@ package leafmap.server.domain.user.dto;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.NoteImage;
 import leafmap.server.domain.note.entity.Scrap;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class ScrapResponseDto {
 
     private Long noteId;
