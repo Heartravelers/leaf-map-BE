@@ -105,3 +105,6 @@ cloud:
   redis:
     host: localhost
     port: 6379
+
+google:
+  api-key: ${GOOGLE_API_KEY}
