@@ -37,7 +37,7 @@ public class Folder extends BaseEntity {
     @JsonBackReference
     private User user;
 
-    @OneToOne(mappedBy = "categoryFilter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private CategoryChallenge categoryChallenge;
 

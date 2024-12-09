@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FolderDto {  //categoryFilter 에 대한 dto
+public class FolderDto {
     //@NotNull(message = "Category name must not be null")
     private String name;
     //@NotNull(message = "Category color must not be null")

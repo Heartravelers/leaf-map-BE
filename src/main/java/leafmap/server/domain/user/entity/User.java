@@ -1,11 +1,10 @@
 package leafmap.server.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.challenge.entity.Challenge;
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.note.entity.Scrap;
@@ -16,7 +15,6 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Builder
@@ -79,5 +77,5 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<CategoryFilter> categoryFilters = new ArrayList<>();
+    private List<Folder> folders = new ArrayList<>();
 }
