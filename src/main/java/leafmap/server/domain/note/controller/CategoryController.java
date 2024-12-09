@@ -48,7 +48,7 @@ public class CategoryController {
     @Operation(summary = "폴더 생성")
     @PostMapping("/folder")
     public ResponseEntity<ApiResponse<?>> makeCategory(@RequestHeader("Authorization") String authorization,
-                                                       @Valid @RequestBody CategoryDto categoryDto){
+                                                       @RequestBody CategoryDto categoryDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             categoryService.makeCategory(userId, categoryDto);
@@ -63,10 +63,10 @@ public class CategoryController {
     }
 
     @Operation(summary = "폴더 수정")
-    @PutMapping("/folder/{folderId}")
+    @PatchMapping("/folder/{folderId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("folderId") Long folderId,
-                                                     @Valid @RequestBody CategoryDto categoryDto){
+                                                     @RequestBody CategoryDto categoryDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             categoryService.updateCategory(userId, folderId, categoryDto);

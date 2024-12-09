@@ -52,8 +52,8 @@ public class NoteController {
     @Operation(summary = "노트 생성")
     @PostMapping("/note")
     public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader("Authorization") String authorization,
-                                                   @RequestBody NoteDto noteDto,
-                                                   @RequestPart List<MultipartFile> imageFile){
+                                                   @RequestPart(value = "noteDto") NoteDto noteDto,
+                                                   @RequestPart(value = "imageFile") List<MultipartFile> imageFile){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
             noteService.postNote(userId, noteDto, imageFile);
@@ -73,8 +73,8 @@ public class NoteController {
     @PutMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("noteId") Long noteId,
-                                                     @Valid @RequestBody NoteDto noteDto,
-                                                     @RequestPart List<MultipartFile> imageFile,
+                                                     @RequestPart(value = "noteDto") NoteDto noteDto,
+                                                     @RequestPart(value = "imageFile") List<MultipartFile> imageFile,
                                                      @RequestBody List<Long> imageIdToDelete){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용

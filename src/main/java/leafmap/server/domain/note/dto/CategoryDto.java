@@ -7,10 +7,12 @@ import leafmap.server.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CategoryDto {  //categoryFilter 에 대한 dto
     private Long id;
     @NotNull(message = "Category name must not be null")

@@ -78,10 +78,15 @@ public class NoteServiceImpl implements NoteService{
 
     @Override   //노트 생성
     public void postNote(Long userId, NoteDto noteDto, List<MultipartFile> imageFiles){
+        System.out.println("Received userId: " + userId);  // userId 로그 출력(**테스트)
+
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
+            System.out.println("User not found for userId: " + userId); // 로그로 확인(**테스트)
+
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
+        System.out.println("Found user: " + optionalUser.get().getUsername());  // 로그로 확인(**테스트)
 
         String region = regionFilterService.getRegion(noteDto.getAddress());
         if (Objects.equals(region, "")){
@@ -102,7 +107,7 @@ public class NoteServiceImpl implements NoteService{
                 .content(noteDto.getContent())
                 .isPublic(noteDto.getIsPublic())
                 .countHeart(0)
-                .countVisit(0) //** regionFilter 유저마다 자동생성할지 고민
+                .countVisit(0)
                 .categoryFilter(categoryRepository.findByName(noteDto.getCategoryName()).get())
                 .place(optionalPlace.get())
                 .user(optionalUser.get()).build();

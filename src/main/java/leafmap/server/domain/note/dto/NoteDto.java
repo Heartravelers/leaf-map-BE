@@ -8,6 +8,7 @@ import leafmap.server.domain.note.entity.NoteImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -16,18 +17,19 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class NoteDto {
     @NotNull(message = "Place info must not be null")
     private String placeId;
-    @NotNull(message = "Title must not be null")
+//    @NotNull(message = "Title must not be null")
     private String title;
-    @NotNull(message = "Content must not be null")
+//    @NotNull(message = "Content must not be null")
     private String content;
     private Boolean isPublic;
     private String address;
     private String categoryName;
 
-    public NoteDto(@NotNull Note note){
+    public NoteDto(Note note){ //** not null 어노테이션 삭제
         this.placeId = note.getPlace().getId();
         this.title = note.getTitle();
         this.content = note.getContent();
