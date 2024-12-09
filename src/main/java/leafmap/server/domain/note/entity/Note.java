@@ -37,13 +37,13 @@ public class Note extends BaseEntity {
     @JsonManagedReference
     private Place place;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 20) //제목 최대 20자
     private String title;
 
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "content", length = 1000)
+    @Column(name = "content", length = 1500) //글 내용 최대 1500자
     private String content;
 
     @Column(name = "is_public")

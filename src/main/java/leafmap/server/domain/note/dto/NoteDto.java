@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteDto {
-    @NotNull(message = "Place info must not be null")
+    //@NotNull(message = "Place info must not be null")
     private String placeId;
 //    @NotNull(message = "Title must not be null")
     private String title;
