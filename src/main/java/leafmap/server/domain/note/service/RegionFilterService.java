@@ -1,5 +1,7 @@
 package leafmap.server.domain.note.service;
 
+import leafmap.server.domain.note.dto.RegionFilterDto;
+import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.user.entity.User;
 
 public interface RegionFilterService {

@@ -91,7 +91,7 @@ public class FolderController {
             folderService.updateFolder(userId, folderId, folderDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
-        catch(CustomException.NotFoundCategoryException e){   //folder 존재하지 않음
+        catch(CustomException.NotFoundFolderException e){   //folder 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch(CustomException.ForbiddenException e){   //권한 없음
@@ -116,7 +116,7 @@ public class FolderController {
             folderService.deleteFolder(userId, folderId);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
-        catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
+        catch (CustomException.NotFoundFolderException e) {   //category 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (CustomException.NotFoundChallengeException e) {   //challenge 존재하지 않고 category 는 삭제됨

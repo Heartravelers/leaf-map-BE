@@ -107,7 +107,7 @@ public class FolderServiceImpl implements FolderService {
     public void deleteFolder(Long userId, Long folderId){  //폴더 삭제
         Optional<Folder> optionalFolder = folderRepository.findById(folderId);
         if (optionalFolder.isEmpty()){
-            throw new CustomException.NotFoundCategoryException(ErrorCode.NOT_FOUND);
+            throw new CustomException.NotFoundFolderException(ErrorCode.NOT_FOUND);
         }
         if (!Objects.equals(userId, optionalFolder.get().getUser().getId())){
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
@@ -130,7 +130,7 @@ public class FolderServiceImpl implements FolderService {
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
         }
 
-        RegionFilter regionFilter = regionFilterRepository.findByRegionName(regionName);
+        RegionFilter regionFilter = regionFilterRepository.findByRegionName(regionName); //** 이거 갈아엎을 필요 있음,, repository 형태가..
         List<Note> notes = noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
 
         return notes.stream()

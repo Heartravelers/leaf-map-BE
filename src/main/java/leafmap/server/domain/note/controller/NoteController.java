@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteRequestDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -68,11 +69,11 @@ public class NoteController {
     })
     @PostMapping("/note")
     public ResponseEntity<ApiResponse<?>> postNote(@RequestHeader("Authorization") String authorization,
-                                                   @RequestPart(value = "noteDto") NoteDto noteDto,
+                                                   @RequestPart(value = "noteRequestDto") NoteRequestDto noteRequestDto,
                                                    @RequestPart(value = "imageFile") List<MultipartFile> imageFile){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            noteService.postNote(userId, noteDto, imageFile);
+            noteService.postNote(userId, noteRequestDto, imageFile);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){ //유저 없음
@@ -159,7 +160,7 @@ public class NoteController {
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
-        catch (CustomException.NotFoundCategoryException e) {   //category 존재하지 않음
+        catch (CustomException.NotFoundFolderException e) {   //category 존재하지 않음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
         }
         catch (Exception e){

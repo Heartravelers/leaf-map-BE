@@ -1,6 +1,7 @@
 package leafmap.server.domain.note.service;
 
 import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteRequestDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public interface NoteService {
     //노트 상세 조회
     NoteDto getNote(Long userId, Long noteId);
     //노트 생성
-    void postNote(Long userId, NoteDto noteDto, List<MultipartFile> imageFile);
+    void postNote(Long userId, NoteRequestDto noteRequestDto, List<MultipartFile> imageFile);
     //노트 수정
     void updateNote(Long userId, Long noteId, NoteDto noteDto, List<MultipartFile> imageFiles, List<Long> imageIdToDelete);
     //노트 삭제

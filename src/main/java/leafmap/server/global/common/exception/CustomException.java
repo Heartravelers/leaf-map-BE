@@ -35,9 +35,14 @@ public class CustomException extends RuntimeException {
             super(errorCode);
         }
     }
+    public static class NotFoundRegionFilterException extends CustomException {
+        public NotFoundRegionFilterException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
 
-    public static class NotFoundCategoryException extends CustomException {
-        public NotFoundCategoryException(ErrorResponseCode errorCode) {
+    public static class NotFoundFolderException extends CustomException {
+        public NotFoundFolderException(ErrorResponseCode errorCode) {
             super(errorCode);
         }
     }

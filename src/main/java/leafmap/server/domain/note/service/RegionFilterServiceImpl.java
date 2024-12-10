@@ -1,11 +1,11 @@
 package leafmap.server.domain.note.service;
 
 import jakarta.transaction.Transactional;
+import leafmap.server.domain.note.dto.RegionFilterDto;
 import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.note.repository.RegionFilterRepository;
 import leafmap.server.domain.user.entity.User;
-import leafmap.server.global.common.ErrorCode;
-import leafmap.server.global.common.exception.CustomException;
+import leafmap.server.global.common.CheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,12 @@ import java.util.Optional;
 @Transactional
 public class RegionFilterServiceImpl implements RegionFilterService{
     private RegionFilterRepository regionFilterRepository;
+    private CheckService checkService;
 
     @Autowired
-    public RegionFilterServiceImpl(RegionFilterRepository regionFilterRepository){
+    public RegionFilterServiceImpl(RegionFilterRepository regionFilterRepository, CheckService checkService){
         this.regionFilterRepository = regionFilterRepository;
+        this.checkService = checkService;
     }
 
     @Override
