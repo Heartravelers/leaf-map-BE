@@ -9,7 +9,7 @@ COPY gradle/ gradle/
 COPY gradlew gradlew
 COPY build.gradle .
 COPY settings.gradle .
-COPY src/ .
+COPY src/ src/
 
 # 4. Gradle 빌드 실행
 RUN chmod +x gradlew
