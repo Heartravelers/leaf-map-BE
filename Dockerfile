@@ -13,7 +13,7 @@ COPY src/ .
 
 # 4. Gradle 빌드 실행
 RUN chmod +x gradlew
-RUN ./gradlew build
+RUN ./gradlew build --no-daemon -x test
 
 # 5. 실행할 JAR 파일 복사
 FROM openjdk:17-jdk-slim
