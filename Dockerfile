@@ -5,15 +5,15 @@ FROM openjdk:17-jdk-slim as build
 WORKDIR /app
 
 # 3. Gradle Wrapper와 의존성 파일 복사
-COPY gradle/ gradle/               # Gradle Wrapper 설정 파일 복사
-COPY gradlew gradlew               # Gradle Wrapper 스크립트 복사
-COPY build.gradle .                # 빌드 스크립트 복사
-COPY settings.gradle .             # 프로젝트 설정 복사
-COPY src/ .                 # 소스 코드 복사
+COPY gradle/ gradle/
+COPY gradlew gradlew
+COPY build.gradle .
+COPY settings.gradle .
+COPY src/ .
 
 # 4. Gradle 빌드 실행
-RUN chmod +x gradlew               # Gradlew 실행 권한 추가
-RUN ./gradlew build --no-daemon    # Gradle 빌드 실행
+RUN chmod +x gradlew
+RUN ./gradlew build --no-daemon
 
 # 5. 실행할 JAR 파일 복사
 FROM openjdk:17-jdk-slim
