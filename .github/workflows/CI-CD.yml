@@ -48,6 +48,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
           script: |  # EC2에서 기존 컨테이너를 중지하고 새로운 이미지를 실행함
+            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             docker pull leafmapadmin/leafmap-deploy:latest  
             docker stop leafmap-container || true  
             docker rm leafmap-container || true  
