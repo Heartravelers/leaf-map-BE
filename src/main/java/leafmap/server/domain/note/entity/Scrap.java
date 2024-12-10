@@ -1,4 +1,5 @@
 package leafmap.server.domain.note.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.place.entity.Place;
 import leafmap.server.domain.user.entity.User;
@@ -21,13 +22,16 @@ public class Scrap {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id", nullable = false)
+    @JsonBackReference
     private Note note;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+    //미사용 필드
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "place_id", nullable = false)
+//    private Place place;
 }

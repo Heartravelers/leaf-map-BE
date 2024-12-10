@@ -1,8 +1,13 @@
 package leafmap.server.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.challenge.entity.Challenge;
-import leafmap.server.domain.note.entity.*;
+import leafmap.server.domain.note.entity.Folder;
+import leafmap.server.domain.note.entity.Note;
+import leafmap.server.domain.note.entity.RegionFilter;
+import leafmap.server.domain.note.entity.Scrap;
 import leafmap.server.domain.qna.entity.Inquiry;
 import leafmap.server.global.common.BaseEntity;
 import leafmap.server.global.oauth2.user.OAuth2Provider;
@@ -58,9 +63,11 @@ public class User extends BaseEntity {
     private boolean isPublic;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Note> notes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Scrap> scraps = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -71,10 +78,12 @@ public class User extends BaseEntity {
     private Challenge challenge;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<RegionFilter> regionFilters = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CategoryFilter> categoryFilters = new ArrayList<>();
+    @JsonManagedReference
+    private List<Folder> folders = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();

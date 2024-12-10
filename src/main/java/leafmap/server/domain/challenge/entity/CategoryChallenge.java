@@ -1,7 +1,8 @@
 package leafmap.server.domain.challenge.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.user.entity.User;
 import lombok.*;
 
@@ -22,8 +23,9 @@ public class CategoryChallenge {
     private Integer countStamp;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private CategoryFilter categoryFilter;
+    @JoinColumn(name = "folder_id", nullable = false)
+    @JsonBackReference
+    private Folder folder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

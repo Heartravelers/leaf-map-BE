@@ -1,5 +1,6 @@
 package leafmap.server.domain.challenge.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;

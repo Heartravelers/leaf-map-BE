@@ -1,7 +1,7 @@
 package leafmap.server.domain.challenge.dto;
 
 import leafmap.server.domain.challenge.entity.Challenge;
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -20,15 +20,15 @@ public class ChallengeResponseDto {
 
     private boolean haveVisited;
 
-    public ChallengeResponseDto(Challenge challenge, List<CategoryFilter> categoryFilters) {
+    public ChallengeResponseDto(Challenge challenge, List<Folder> folders) {
         this.countStamp = challenge.getCountStamp();
         this.receivedHeart = challenge.getReceivedHeart();
         this.haveFollower = challenge.getHaveFollower();
         this.haveVisited = challenge.getHaveVisited();
 
         List<CategoryChallengeResponseDto> categories = new ArrayList<>();
-        for(CategoryFilter categoryFilter : categoryFilters) {
-            categories.add(new CategoryChallengeResponseDto(categoryFilter));
+        for(Folder folder : folders) {
+            categories.add(new CategoryChallengeResponseDto(folder));
         }
         this.categories = categories;
     }

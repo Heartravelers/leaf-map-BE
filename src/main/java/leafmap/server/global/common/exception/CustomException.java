@@ -11,4 +11,46 @@ public class CustomException extends RuntimeException {
     public CustomException(ErrorResponseCode errorCode) {
         this.errorCode = errorCode;
     }
+
+    public static class NotFoundNoteException extends CustomException {
+        public NotFoundNoteException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class NotFoundUserException extends CustomException {
+        public NotFoundUserException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class ForbiddenException extends CustomException {
+        public ForbiddenException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class NotFoundPlaceException extends CustomException {
+        public NotFoundPlaceException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class NotFoundCategoryException extends CustomException {
+        public NotFoundCategoryException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class NotFoundChallengeException extends CustomException {
+        public NotFoundChallengeException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
+
+    public static class BadRequestException extends CustomException {
+        public BadRequestException(ErrorResponseCode errorCode) {
+            super(errorCode);
+        }
+    }
 }

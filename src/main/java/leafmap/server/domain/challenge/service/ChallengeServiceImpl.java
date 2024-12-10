@@ -21,7 +21,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            return new ChallengeResponseDto(user.getChallenge(), user.getCategoryFilters());
+            return new ChallengeResponseDto(user.getChallenge(), user.getFolders());
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
     }

@@ -1,5 +1,9 @@
 package leafmap.server.domain.note.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import leafmap.server.domain.place.entity.Place;
@@ -25,19 +29,21 @@ public class Note extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
+    @JsonManagedReference
     private Place place;
 
-    @Column(name = "title")
+    @Column(name = "title", length = 20) //제목 최대 20자
     private String title;
 
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "content", length = 1000)
+    @Column(name = "content", length = 1500) //글 내용 최대 1500자
     private String content;
 
     @Column(name = "is_public")
@@ -55,11 +61,29 @@ public class Note extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private CategoryFilter categoryFilter;
+    private Folder folder;
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<NoteImage> noteImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Scrap> scraps = new ArrayList<>();
+
+    public void increaseHeart() { // makeScrap 에서 사용
+        this.countHeart++;
+    }
+
+    public void decreaseHeart() { // deleteScrap 에서 사용
+        this.countHeart--;
+    }
+
+    public NoteBuilder toBuilder() {
+        return builder()
+                .title(this.title)
+                .content(this.content)
+                .isPublic(this.isPublic)
+                .folder(this.folder);
+    }
 }

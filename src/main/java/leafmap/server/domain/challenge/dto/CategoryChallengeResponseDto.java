@@ -1,6 +1,6 @@
 package leafmap.server.domain.challenge.dto;
 
-import leafmap.server.domain.note.entity.CategoryFilter;
+import leafmap.server.domain.note.entity.Folder;
 import lombok.Getter;
 
 @Getter
@@ -10,9 +10,9 @@ public class CategoryChallengeResponseDto {
 
     private int countStamp;
 
-    public CategoryChallengeResponseDto(CategoryFilter categoryFilter) {
-        this.categoryName = categoryFilter.getName();
-        this.countStamp = categoryFilter.getCategoryChallenge().getCountStamp();
+    public CategoryChallengeResponseDto(Folder folder) {
+        this.categoryName = folder.getName();
+        this.countStamp = folder.getCategoryChallenge().getCountStamp();
     }
 
 }
