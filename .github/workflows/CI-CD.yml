@@ -21,7 +21,7 @@ jobs:
       # 3. docker image 빌드
       - name: Build docker image
         run: |
-          docker build -t leafmap:latest .
+          docker build -t leafmapadmin/leafmap-deploy:latest .
 
       # 4. docker hub에 로그인
       - name: login to docker hub
