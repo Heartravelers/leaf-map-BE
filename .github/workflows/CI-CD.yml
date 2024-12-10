@@ -51,4 +51,4 @@ jobs:
             docker pull leafmapadmin/leafmap-deploy:latest  
             docker stop leafmap-container || true  
             docker rm leafmap-container || true  
-            docker run --env-file /home/ec2-user/leafmap-deploy/.env -d -p 8080:8080 --name leafmap-container leafmap:latest
+            docker run --env-file /home/ec2-user/leafmap-deploy/.env -d -p 8080:8080 --name leafmap-container leafmapadmin/leafmap-deploy:latest
