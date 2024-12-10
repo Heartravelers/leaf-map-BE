@@ -5,21 +5,21 @@ FROM openjdk:17-jdk-slim as build
 WORKDIR /app
 
 # 3. Gradle Wrapper와 의존성 파일 복사
-COPY gradle/ gradle/
-COPY build.gradle.kts .
-COPY settings.gradle.kts .
+COPY gradle/ gradle/               # Gradle Wrapper 설정 파일 복사
+COPY gradlew gradlew               # Gradle Wrapper 스크립트 복사
+COPY build.gradle .                # 빌드 스크립트 복사
+COPY settings.gradle .             # 프로젝트 설정 복사
+COPY src/ src/                     # 소스 코드 복사
 
-# 4. Gradle 빌드 (로컬에서 빌드 시 -jvm 옵션을 통해 환경 변수 설정 가능)
-RUN ./gradlew build --no-daemon --stacktrace
+# 4. Gradle 빌드 실행
+RUN chmod +x gradlew               # Gradlew 실행 권한 추가
+RUN ./gradlew build --no-daemon    # Gradle 빌드 실행
 
-# 5. 실행할 JAR 파일 복사 (빌드된 JAR 파일)
+# 5. 실행할 JAR 파일 복사
 FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# 6. 빌드 단계에서 생성된 JAR 파일을 컨테이너로 복사
-COPY --from=build /app/build/libs/*.jar /app/spring-app.jar
-
-# 7. 포트 열기
+# 6. 애플리케이션 실행
 EXPOSE 8080
-
-# 8. 애플리케이션 실행 명령어
-ENTRYPOINT ["java", "-jar", "/app/spring-app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
