@@ -52,9 +52,6 @@ public class Note extends BaseEntity {
     @Column(name = "count_heart")
     private Integer countHeart;
 
-    @Column(name = "count_visit")
-    private Integer countVisit;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id", nullable = false)
     private RegionFilter regionFilter;

@@ -5,8 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.dto.NoteRequestDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
@@ -44,8 +43,8 @@ public class NoteController {
                                                   @PathVariable("noteId") Long noteId){
         try{
             Long userId = Long.parseLong(authorization); // 테스트용
-            NoteDto noteDto = noteService.getNote(userId, noteId);
-            return ResponseEntity.ok(ApiResponse.onSuccess(noteDto));
+            NoteDetailResponseDto noteDetailResponseDto = noteService.getNote(userId, noteId);
+            return ResponseEntity.ok(ApiResponse.onSuccess(noteDetailResponseDto));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
             return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(e.getErrorCode().getErrorResponse());
@@ -96,12 +95,11 @@ public class NoteController {
     @PutMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> updateNote(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("noteId") Long noteId,
-                                                     @RequestPart(value = "noteDto") NoteDto noteDto,
-                                                     @RequestPart(value = "imageFile") List<MultipartFile> imageFile,
-                                                     @RequestPart(value = "imageIdToDelete") List<Long> imageIdToDelete){
+                                                     @RequestPart(value = "noteRequestDto") NoteRequestDto noteRequestDto,
+                                                     @RequestPart(value = "imageFile") List<MultipartFile> imageFile){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            noteService.updateNote(userId, noteId, noteDto, imageFile, imageIdToDelete);
+            noteService.updateNote(userId, noteId, noteRequestDto, imageFile);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundNoteException e){   //note 존재하지 않음
@@ -154,7 +152,7 @@ public class NoteController {
     public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable("userId") Long userId,
                                                           @PathVariable("category") String category) {
         try {
-            List<NoteDto> notes = noteService.getList(userId, category);
+            List<NoteDetailResponseDto> notes = noteService.getList(userId, category);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

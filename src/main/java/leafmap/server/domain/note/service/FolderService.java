@@ -1,7 +1,7 @@
 package leafmap.server.domain.note.service;
 
 import leafmap.server.domain.note.dto.FolderDto;
-import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ public interface FolderService {
     void makeFolder(Long userId, FolderDto folderDto);
     void updateFolder(Long userId, Long folderId, FolderDto folderDto);
     void deleteFolder(Long userId, Long folderId);
-    List<NoteDto> filterNotes(Long userId, String regionName);
+    List<NoteDetailResponseDto> filterNotes(Long userId, String regionName);
 
 }

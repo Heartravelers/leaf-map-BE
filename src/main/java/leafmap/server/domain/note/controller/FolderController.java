@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.note.dto.FolderDto;
-import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.service.FolderServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -140,7 +140,7 @@ public class FolderController {
     public ResponseEntity<ApiResponse<?>> regionFiltering(@PathVariable("userId") Long userId,
                                                   @PathVariable("regionName") String regionName){
         try{
-            List<NoteDto> notes = folderService.filterNotes(userId, regionName);
+            List<NoteDetailResponseDto> notes = folderService.filterNotes(userId, regionName);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

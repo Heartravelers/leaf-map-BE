@@ -1,7 +1,7 @@
 package leafmap.server.domain.note.service;
 
 import jakarta.transaction.Transactional;
-import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.dto.NoteRequestDto;
 import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
@@ -61,7 +61,7 @@ public class NoteServiceImpl implements NoteService{
     }
 
     @Override     //노트 상세 조회
-    public NoteDto getNote(Long myUserId, Long noteId){
+    public NoteDetailResponseDto getNote(Long myUserId, Long noteId){
         Note note = checkService.checkNote(noteId);
         User user = checkService.checkUser(note.getUser().getId());
         if (!Objects.equals(myUserId, user.getId())) //본인 글이 아닐 때
@@ -69,8 +69,7 @@ public class NoteServiceImpl implements NoteService{
                 throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
             }
 
-        NoteDto noteDto = new NoteDto(note); //*-* noteDto responseDto 에서 관리해야하는데 그거 필드 관련 지윤이와 상의
-        return noteDto;
+        return new NoteDetailResponseDto(note);
     }
 
 
@@ -90,12 +89,11 @@ public class NoteServiceImpl implements NoteService{
                 .content(noteRequestDto.getContent())
                 .isPublic(noteRequestDto.getIsPublic())
                 .countHeart(0)
-                .countVisit(0)
                 .regionFilter(regionFilter)
                 .folder(folder).build();
         noteRepository.save(note);
 
-        //이미지 로직 - s3 업로드
+        //이미지 로직 - s3 업로드하고 db에 정보 저장 (note 와 image 연결)
         S3UploadRequest request = S3UploadRequest.builder()
                 .userId(myUserId)
                 .dirName(note.getId().toString()).build();
@@ -113,25 +111,28 @@ public class NoteServiceImpl implements NoteService{
     }
 
     @Override   //노트 수정
-    public void updateNote(Long userId, Long noteId, NoteDto noteDto, List<MultipartFile> imageFiles, List<Long> imageIdsToDelete){
-        Optional<Note> optionalNote = noteRepository.findById(noteId);
-        if (optionalNote.isEmpty()){
-            throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
-        }
+    public void updateNote(Long myUserId, Long noteId, NoteRequestDto noteRequestDto, List<MultipartFile> imageFiles){
+        User user = checkService.checkUser(myUserId);
+        Note originalNote = checkService.checkNote(noteId);
 
-        if (!Objects.equals(userId, optionalNote.get().getUser().getId())){
+        if (!Objects.equals(user, originalNote.getUser())){ //본인이 쓴 글이 아니면
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        Note newNote = optionalNote.get().toBuilder()
-                .title(noteDto.getTitle())
-                .content(noteDto.getContent())
-                .isPublic(noteDto.getIsPublic())
-                .folder(folderRepository.findByName(noteDto.getFolderName()).get()).build();
+        //**플레이스 변경도 가능한지?
+
+        Note newNote = originalNote.toBuilder()
+                .title(noteRequestDto.getTitle())
+                .content(noteRequestDto.getContent())
+                .isPublic(noteRequestDto.getIsPublic())
+                .folder(folderRepository.findByName(noteRequestDto.getFolderName()).get()).build();
 
         noteRepository.save(newNote);
 
         //이미지 로직 - s3 수정
+        //**이미지 파일 자체로 그냥 받고 해당 파일의 NoteImage 로컬 db 객체를 불러와서
+        //생성된 url 이 해당 db에 있는지를 확인하고
+        //비교해보고 있으면 제외, 없으면 s3올리고 저장, 언급된 url 이 없다면 삭제를 하도록?
 
         //**기존 이미지 삭제
 //        if (imageIdsToDelete!=null && !imageIdsToDelete.isEmpty()){
@@ -144,44 +145,38 @@ public class NoteServiceImpl implements NoteService{
 //            }
 //        }
 
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            S3UploadRequest request = S3UploadRequest.builder()
-                    .userId(userId)
-                    .dirName(newNote.getId().toString()).build();
-
-            for (MultipartFile file : imageFiles) {
-                String url = s3Provider.uploadFile(file, request);
-                NoteImage noteImage = NoteImage.builder()
-                        .imageUrl(url)
-                        .note(newNote).build();
-                noteImageRepository.save(noteImage);
-            }
-        }
+//        if (imageFiles != null && !imageFiles.isEmpty()) {
+//            S3UploadRequest request = S3UploadRequest.builder()
+//                    .userId(userId)
+//                    .dirName(newNote.getId().toString()).build();
+//
+//            for (MultipartFile file : imageFiles) {
+//                String url = s3Provider.uploadFile(file, request);
+//                NoteImage noteImage = NoteImage.builder()
+//                        .imageUrl(url)
+//                        .note(newNote).build();
+//                noteImageRepository.save(noteImage);
+//            }
+//        }
 
     }
 
     @Override   //노트 삭제
-    public void deleteNote(Long userId, Long noteId){
-        Optional<Note> optionalNote = noteRepository.findById(noteId);
-        if (optionalNote.isEmpty()){
-            throw new CustomException.NotFoundNoteException(ErrorCode.NOT_FOUND);
-        }
+    public void deleteNote(Long myUserId, Long noteId){
+        User user = checkService.checkUser(myUserId);
+        Note note = checkService.checkNote(noteId);
+        String regionName = checkService.checkAndGetRegionName(note.getPlace().getAddress());
 
-        String region = regionFilterService.getRegion(optionalNote.get().getPlace().getAddress());
-        if (Objects.equals(region, "")){
-            throw new CustomException.BadRequestException(ErrorCode.BAD_REQUEST);
-        }
-
-        if (!Objects.equals(userId, optionalNote.get().getUser().getId())){
+        if (!Objects.equals(user, note.getUser())){ //본인이 쓴 글이 아니면
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
         noteRepository.deleteById(noteId);
-        regionFilterService.decreaseRegionNoteCount(optionalNote.get().getUser(), region);
+        regionFilterService.decreaseRegionNoteCount(user, regionName);
     }
 
     @Override    //폴더 내 노트목록 조회
-    public List<NoteDto> getList(Long userId, String categoryName){
+    public List<NoteDetailResponseDto> getList(Long userId, String categoryName){
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
@@ -194,7 +189,7 @@ public class NoteServiceImpl implements NoteService{
         List<Note> notes = noteRepository.findByUserAndFolder(optionalUser.get(), optionalFolder.get()); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
 
         return notes.stream()
-                .map(NoteDto::new)
+                .map(NoteDetailResponseDto::new)
                 .collect(Collectors.toList());
 
     }

@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
 import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.FolderDto;
-import leafmap.server.domain.note.dto.NoteDto;
+import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
@@ -124,7 +124,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public List<NoteDto> filterNotes(Long userId, String regionName){ //지역 필터링
+    public List<NoteDetailResponseDto> filterNotes(Long userId, String regionName){ //지역 필터링
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()){
             throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
@@ -134,7 +134,7 @@ public class FolderServiceImpl implements FolderService {
         List<Note> notes = noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
 
         return notes.stream()
-                .map(NoteDto::new)
+                .map(NoteDetailResponseDto::new)
                 .collect(Collectors.toList());
     }
 

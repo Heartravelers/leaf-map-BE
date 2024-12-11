@@ -11,11 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteRequestDto {
-    //@NotNull(message = "Place info must not be null")
     private String placeId;
-    //    @NotNull(message = "Title must not be null")
     private String title;
-    //    @NotNull(message = "Content must not be null")
     private String content;
     private Boolean isPublic;
     private String address;
