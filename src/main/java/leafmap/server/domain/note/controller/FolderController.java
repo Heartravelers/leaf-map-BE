@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import leafmap.server.domain.note.dto.FolderDto;
+import leafmap.server.domain.note.dto.FolderRequestDto;
+import leafmap.server.domain.note.dto.FolderResponseDto;
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.service.FolderServiceImpl;
 import leafmap.server.global.common.ApiResponse;
@@ -36,9 +37,11 @@ public class FolderController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping("/folder/{userId}")
-    public ResponseEntity<ApiResponse<?>> getFolder(@PathVariable("userId") Long userId){
+    public ResponseEntity<ApiResponse<?>> getFolder(@RequestHeader("Authorization") String authorization,
+                                                    @PathVariable("userId") Long userId){
         try{
-            List<FolderDto> folders = folderService.getFolder(userId); //**폴더 목록 비공개 있다면 고쳐야 함(폴더 내 노트목록 api 참고) - serviceImpl 도
+            Long myUserId = Long.parseLong(authorization); // 테스트용
+            List<FolderResponseDto> folders = folderService.getFolder(myUserId, userId); //**폴더 목록 비공개 있다면 고쳐야 함
             return ResponseEntity.ok(ApiResponse.onSuccess(folders));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음
@@ -58,10 +61,10 @@ public class FolderController {
     })
     @PostMapping("/folder")
     public ResponseEntity<ApiResponse<?>> makeFolder(@RequestHeader("Authorization") String authorization,
-                                                       @RequestBody FolderDto folderDto){
+                                                       @RequestBody FolderRequestDto folderRequestDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            folderService.makeFolder(userId, folderDto);
+            folderService.makeFolder(userId, folderRequestDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.CREATED));
         }
         catch(CustomException.NotFoundUserException e){ //유저 없음
@@ -85,10 +88,10 @@ public class FolderController {
     @PatchMapping("/folder/{folderId}")
     public ResponseEntity<ApiResponse<?>> updateFolder(@RequestHeader("Authorization") String authorization,
                                                      @PathVariable("folderId") Long folderId,
-                                                     @RequestBody FolderDto folderDto){
+                                                     @RequestBody FolderRequestDto folderRequestDto){
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            folderService.updateFolder(userId, folderId, folderDto);
+            folderService.updateFolder(userId, folderId, folderRequestDto);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch(CustomException.NotFoundFolderException e){   //folder 존재하지 않음

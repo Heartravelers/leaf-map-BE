@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import leafmap.server.domain.note.dto.NoteRequestDto;
 import lombok.*;
 import leafmap.server.domain.place.entity.Place;
 import leafmap.server.domain.user.entity.User;
@@ -76,11 +77,9 @@ public class Note extends BaseEntity {
         this.countHeart--;
     }
 
-    public NoteBuilder toBuilder() { //노트 수정 시 사용
-        return builder()
-                .title(this.title)
-                .content(this.content)
-                .isPublic(this.isPublic)
-                .folder(this.folder);
+    public void update(NoteRequestDto noteRequestDto){
+        this.title = noteRequestDto.getTitle();
+        this.content = noteRequestDto.getContent();
+        this.isPublic = noteRequestDto.getIsPublic(); //**폴더 연결도 해줘야 함.. 파라미터로 넘기자
     }
 }

@@ -9,5 +9,4 @@ import java.util.Optional;
 
 public interface CategoryChallengeRepository extends JpaRepository<CategoryChallenge, Long> {
     Optional<CategoryChallenge> findByUserAndFolder(User user, Folder folder);
-    Optional<CategoryChallenge> findByFolder(Folder folder);
 }

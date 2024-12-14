@@ -108,28 +108,26 @@ public class NoteServiceImpl implements NoteService{
             noteImageRepository.save(noteImage);
         }
 
-         //**파일 자체가 비공개인 것도 체크하기
+         //**폴더 자체가 비공개인 것도 체크하기
         regionFilterService.increaseRegionNoteCount(user, regionName);
     }
 
     @Override   //노트 수정
     public void updateNote(Long myUserId, Long noteId, NoteRequestDto noteRequestDto, List<MultipartFile> imageFiles){
         User user = checkService.checkUser(myUserId);
-        Note originalNote = checkService.checkNote(noteId);
+        Note note = checkService.checkNote(noteId);
 
-        if (!Objects.equals(user, originalNote.getUser())){ //본인이 쓴 글이 아니면
+        if (!Objects.equals(user, note.getUser())){ //본인이 쓴 글이 아니면
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        //**플레이스 변경도 가능한지?-가능
+        RegionFilter regionFilter = checkService.checkAndGetRegionName()
+        Place place = checkService.checkPlaceAndSaveReturn();
 
-        Note newNote = originalNote.toBuilder()
-                .title(noteRequestDto.getTitle())
-                .content(noteRequestDto.getContent())
-                .isPublic(noteRequestDto.getIsPublic())
-                .folder(folderRepository.findByUserAndName(user, noteRequestDto.getFolderName()).get()).build();
+        //**플레이스 변경도 가능한지?-가능 -> 폴더, 플레이스 객체 dto정보 통해 생성해서 update로 넘겨주기
 
-        noteRepository.save(newNote);
+        note.update(noteRequestDto);
+        noteRepository.save(note);
 
         //이미지 로직 - s3 수정
         //**이미지 파일 자체로 그냥 받고 해당 파일의 NoteImage 로컬 db 객체를 불러와서

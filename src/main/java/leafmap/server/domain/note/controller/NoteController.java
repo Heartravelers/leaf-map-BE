@@ -149,13 +149,13 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @GetMapping("/notelist/{userId}/{category}")
+    @GetMapping("/notelist/{userId}/{folderName}}")
     public ResponseEntity<ApiResponse<?>> getUserNoteList(@RequestHeader("Authorization") String authorization,
                                                           @PathVariable("userId") Long userId,
-                                                          @PathVariable("category") String category) {
+                                                          @PathVariable("folderName") String folderName) {
         try {
             Long myUserId = Long.parseLong(authorization); // 테스트용
-            List<NoteResponseDto> notes = noteService.getList(myUserId, userId, category);
+            List<NoteResponseDto> notes = noteService.getList(myUserId, userId, folderName);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

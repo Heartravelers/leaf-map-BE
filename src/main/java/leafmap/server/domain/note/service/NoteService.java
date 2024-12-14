@@ -17,5 +17,5 @@ public interface NoteService {
     //노트 삭제
     void deleteNote(Long myUserId, Long noteId);
     //폴더 내 노트목록 조회(본인, 타사용자)
-    List<NoteResponseDto> getList(Long myUserId, Long userId, String categoryName);
+    List<NoteResponseDto> getList(Long myUserId, Long userId, String folderName);
 }

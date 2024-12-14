@@ -1,6 +1,7 @@
 package leafmap.server.global.common;
 
-import leafmap.server.domain.note.dto.RegionFilterDto;
+import leafmap.server.domain.challenge.entity.CategoryChallenge;
+import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
@@ -26,17 +27,20 @@ public class CheckServiceImpl implements CheckService {
     private RegionFilterRepository regionFilterRepository;
     private RegionFilterService regionFilterService;
     private PlaceRepository placeRepository;
+    private CategoryChallengeRepository categoryChallengeRepository;
 
     @Autowired
     public CheckServiceImpl(UserRepository userRepository, NoteRepository noteRepository,
                             FolderRepository folderRepository, RegionFilterRepository regionFilterRepository,
-                            RegionFilterService regionFilterService, PlaceRepository placeRepository){
+                            RegionFilterService regionFilterService, PlaceRepository placeRepository,
+                            CategoryChallengeRepository categoryChallengeRepository){
         this.userRepository = userRepository;
         this.noteRepository = noteRepository;
         this.folderRepository = folderRepository;
         this.regionFilterRepository = regionFilterRepository;
         this.regionFilterService = regionFilterService;
         this.placeRepository = placeRepository;
+        this.categoryChallengeRepository = categoryChallengeRepository;
     }
 
     @Override
@@ -61,7 +65,17 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    @Override
+    @Override //user 와 folderId 로 체크 (폴더 관련 api)
+    public Folder checkUserFolder(User user, Long folderId){
+        Optional<Folder> optionalFolder = folderRepository.findByUserAndId(user, folderId);
+        if (optionalFolder.isEmpty()){
+            throw new CustomException.NotFoundFolderException(ErrorCode.NOT_FOUND);
+        }
+        else{
+            return optionalFolder.get();
+        }
+    }
+    @Override //user 와 folderName 으로 체크 (노트 관련 api)
     public Folder checkUserFolder(User user, String folderName){
         Optional<Folder> optionalFolder = folderRepository.findByUserAndName(user, folderName);
         if (optionalFolder.isEmpty()){
@@ -112,4 +126,11 @@ public class CheckServiceImpl implements CheckService {
             return optionalPlace.get();
         }
     }
+
+    @Override
+    public CategoryChallenge checkCategoryChallenge(User user, Folder folder) {
+        Optional<CategoryChallenge> optionalChallenge = categoryChallengeRepository.findByUserAndFolder(user, folder);
+        return optionalChallenge.orElse(null);
+    }
+
 }

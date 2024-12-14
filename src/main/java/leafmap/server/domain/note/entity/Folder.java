@@ -3,6 +3,7 @@ package leafmap.server.domain.note.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import leafmap.server.domain.challenge.entity.CategoryChallenge;
+import leafmap.server.domain.note.dto.FolderRequestDto;
 import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -29,8 +30,11 @@ public class Folder extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "count_note")
-    private Integer countNote;
+//    @Column(name = "count_note") //미사용
+//    private Integer countNote;
+
+    @Column(name = "isPublic") //파일 비공개 여부 추가
+    private Boolean isPublic;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -41,11 +45,16 @@ public class Folder extends BaseEntity {
     @JsonManagedReference
     private CategoryChallenge categoryChallenge;
 
-    public FolderBuilder toBuilder() {
-        return builder()
-                .id(this.id)
-                .name(this.name)
-                .color(this.color)
-                .user(this.user);  // user는 변경되지 않음
+    public void update(FolderRequestDto folderRequestDto){
+        this.name = folderRequestDto.getName();
+        this.color = folderRequestDto.getColor();
+        this.isPublic = folderRequestDto.getIsPublic();
+    }
+
+    public void syncCategoryChallenge(CategoryChallenge categoryChallenge){
+        this.categoryChallenge = categoryChallenge;
+        if (categoryChallenge != null) {
+            categoryChallenge.update(this); // CategoryChallenge 와 동기화
+        }
     }
 }

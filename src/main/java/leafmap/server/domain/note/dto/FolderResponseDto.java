@@ -10,23 +10,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FolderDto {
+public class FolderResponseDto {
     //@NotNull(message = "Category name must not be null")
     private String name;
     //@NotNull(message = "Category color must not be null")
-
     private String color;
     //@NotNull(message = "IsDefault must not be null")
-    private Integer countNote;
-    //@NotNull(message = "User must not be null")
-
-//    private User user;
-//    @NotNull(message = "Challenge must not be null")
+    private Boolean isPublic;
 
 
-    public FolderDto(Folder folder){ //Not null 어노테이션 잠시 삭제
+    public FolderResponseDto(Folder folder){ //Not null 어노테이션 잠시 삭제
         this.color = folder.getColor();
-        this.countNote = folder.getCountNote();
+        this.isPublic = folder.getIsPublic();
         this.name = folder.getName();
     }
 }
