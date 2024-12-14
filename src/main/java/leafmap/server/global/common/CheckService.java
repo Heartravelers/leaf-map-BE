@@ -9,7 +9,7 @@ import leafmap.server.domain.user.entity.User;
 public interface CheckService {
     User checkUser(Long userId);
     Note checkNote(Long noteId);
-    Folder checkFolder(String folderName);
+    Folder checkUserFolder(User user, String folderName);
     String checkAndGetRegionName(String address);
     Place checkPlaceAndSaveReturn(String placeId, String RegionName);
     RegionFilter checkRegionFilterAndMakeOrReturn(User user, String regionName);

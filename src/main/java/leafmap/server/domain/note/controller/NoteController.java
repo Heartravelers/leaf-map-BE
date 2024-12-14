@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.dto.NoteRequestDto;
+import leafmap.server.domain.note.dto.NoteResponseDto;
 import leafmap.server.domain.note.service.NoteServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -149,10 +150,12 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @GetMapping("/notelist/{userId}/{category}")
-    public ResponseEntity<ApiResponse<?>> getUserNoteList(@PathVariable("userId") Long userId,
+    public ResponseEntity<ApiResponse<?>> getUserNoteList(@RequestHeader("Authorization") String authorization,
+                                                          @PathVariable("userId") Long userId,
                                                           @PathVariable("category") String category) {
         try {
-            List<NoteDetailResponseDto> notes = noteService.getList(userId, category);
+            Long myUserId = Long.parseLong(authorization); // 테스트용
+            List<NoteResponseDto> notes = noteService.getList(myUserId, userId, category);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

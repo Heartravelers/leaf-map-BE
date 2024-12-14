@@ -76,7 +76,7 @@ public class Note extends BaseEntity {
         this.countHeart--;
     }
 
-    public NoteBuilder toBuilder() {
+    public NoteBuilder toBuilder() { //노트 수정 시 사용
         return builder()
                 .title(this.title)
                 .content(this.content)

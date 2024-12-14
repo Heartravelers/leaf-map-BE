@@ -2,6 +2,7 @@ package leafmap.server.domain.note.service;
 
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.dto.NoteRequestDto;
+import leafmap.server.domain.note.dto.NoteResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface NoteService {
     //노트 삭제
     void deleteNote(Long myUserId, Long noteId);
     //폴더 내 노트목록 조회(본인, 타사용자)
-    List<NoteDetailResponseDto> getList(Long userId, String categoryName);
+    List<NoteResponseDto> getList(Long myUserId, Long userId, String categoryName);
 }

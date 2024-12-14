@@ -3,6 +3,7 @@ package leafmap.server.domain.note.service;
 import jakarta.transaction.Transactional;
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
 import leafmap.server.domain.note.dto.NoteRequestDto;
+import leafmap.server.domain.note.dto.NoteResponseDto;
 import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.NoteImage;
@@ -79,8 +80,9 @@ public class NoteServiceImpl implements NoteService{
         String regionName = checkService.checkAndGetRegionName(noteRequestDto.getAddress()); // 주소에서 regionName get
         RegionFilter regionFilter = checkService.checkRegionFilterAndMakeOrReturn(user, regionName); // 유저에 대한 해당 regionFilter 가져오기
         Place place = checkService.checkPlaceAndSaveReturn(noteRequestDto.getPlaceId(), noteRequestDto.getAddress()); // place 정보 저장하고 가져오기
-        Folder folder = checkService.checkFolder(noteRequestDto.getFolderName()); //folder 정보 확인하고 가져오기
+        Folder folder = checkService.checkUserFolder(user, noteRequestDto.getFolderName()); //folder 정보 확인하고 가져오기
 
+        //dto 데이터 통해 노트 생성
         Note note = Note.builder()
                 .title(noteRequestDto.getTitle())
                 .user(user)
@@ -93,7 +95,7 @@ public class NoteServiceImpl implements NoteService{
                 .folder(folder).build();
         noteRepository.save(note);
 
-        //이미지 로직 - s3 업로드하고 db에 정보 저장 (note 와 image 연결)
+        //이미지 관련 로직 - s3 업로드하고 db에 정보 저장 (note 와 image 연결)
         S3UploadRequest request = S3UploadRequest.builder()
                 .userId(myUserId)
                 .dirName(note.getId().toString()).build();
@@ -119,13 +121,13 @@ public class NoteServiceImpl implements NoteService{
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        //**플레이스 변경도 가능한지?
+        //**플레이스 변경도 가능한지?-가능
 
         Note newNote = originalNote.toBuilder()
                 .title(noteRequestDto.getTitle())
                 .content(noteRequestDto.getContent())
                 .isPublic(noteRequestDto.getIsPublic())
-                .folder(folderRepository.findByName(noteRequestDto.getFolderName()).get()).build();
+                .folder(folderRepository.findByUserAndName(user, noteRequestDto.getFolderName()).get()).build();
 
         noteRepository.save(newNote);
 
@@ -176,21 +178,21 @@ public class NoteServiceImpl implements NoteService{
     }
 
     @Override    //폴더 내 노트목록 조회
-    public List<NoteDetailResponseDto> getList(Long userId, String categoryName){
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
-        }
-        Optional<Folder> optionalFolder = folderRepository.findByName(categoryName);
-        if (optionalFolder.isEmpty()){
-            throw new CustomException.NotFoundFolderException(ErrorCode.NOT_FOUND);
-        }
+    public List<NoteResponseDto> getList(Long myUserId, Long userId, String folderName){
+        User user = checkService.checkUser(userId);
+        Folder folder = checkService.checkUserFolder(user, folderName);
 
-        List<Note> notes = noteRepository.findByUserAndFolder(optionalUser.get(), optionalFolder.get()); //**내거인지 아닌지, isPublic, notes 엔티티가 아닌 dto return 고려해야 함
+        List<Note> notes = noteRepository.findByUserAndFolder(user, folder);
+
+        if (!Objects.equals(myUserId, user.getId())) //본인 글이 아닐 때
+            for (Note note : notes) {
+                if (!note.getIsPublic()) { //다른 유저 글이 isPublic False 이면 해당 객체 제외
+                    notes.remove(note);
+                }
+            }
 
         return notes.stream()
-                .map(NoteDetailResponseDto::new)
+                .map(NoteResponseDto::new)
                 .collect(Collectors.toList());
-
     }
 }

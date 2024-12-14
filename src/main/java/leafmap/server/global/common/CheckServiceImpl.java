@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Objects;
 import java.util.Optional;
 
-// 객체에 대해 check 예외처리 하고 service 하는 클래스
+// 객체에 대해 check(존재 여부 확인) 예외처리 하고 service 하는 클래스
 public class CheckServiceImpl implements CheckService {
     private UserRepository userRepository;
     private NoteRepository noteRepository;
@@ -62,8 +62,8 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
-    public Folder checkFolder(String folderName){ //** user 도 넘겨줘야 정확한 user에 대한 폴더 확인 가능
-        Optional<Folder> optionalFolder = folderRepository.findByName(folderName);
+    public Folder checkUserFolder(User user, String folderName){
+        Optional<Folder> optionalFolder = folderRepository.findByUserAndName(user, folderName);
         if (optionalFolder.isEmpty()){
             throw new CustomException.NotFoundFolderException(ErrorCode.NOT_FOUND);
         }
