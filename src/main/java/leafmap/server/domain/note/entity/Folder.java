@@ -30,8 +30,8 @@ public class Folder extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-//    @Column(name = "count_note") //미사용
-//    private Integer countNote;
+    @Column(name = "count_note")
+    private Integer countNote;
 
     @Column(name = "isPublic") //파일 비공개 여부 추가
     private Boolean isPublic;

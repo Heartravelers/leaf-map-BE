@@ -109,7 +109,7 @@ public class NoteServiceImpl implements NoteService{
         }
 
          //**폴더 자체가 비공개인 것도 체크하기
-        regionFilterService.increaseRegionNoteCount(user, regionName);
+        regionFilterService.increaseRegionNoteCount(user, regionName); //해당 지역 필터 노트 수 + 1
     }
 
     @Override   //노트 수정
@@ -162,17 +162,19 @@ public class NoteServiceImpl implements NoteService{
     }
 
     @Override   //노트 삭제
-    public void deleteNote(Long myUserId, Long noteId){
+    public void deleteNote(Long myUserId, List<Long> noteIds) {
         User user = checkService.checkUser(myUserId);
-        Note note = checkService.checkNote(noteId);
-        String regionName = checkService.checkAndGetRegionName(note.getPlace().getAddress());
+        for (Long noteId : noteIds) {
+            Note note = checkService.checkNote(noteId);
+            String regionName = checkService.checkAndGetRegionName(note.getPlace().getAddress());
 
-        if (!Objects.equals(user, note.getUser())){ //본인이 쓴 글이 아니면
-            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+            if (!Objects.equals(user, note.getUser())) { //본인이 쓴 글이 아니면
+                throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+            }
+
+            noteRepository.deleteById(noteId);
+            regionFilterService.decreaseRegionNoteCount(user, regionName); // 해당 지역 필터 노트 수 -1
         }
-
-        noteRepository.deleteById(noteId);
-        regionFilterService.decreaseRegionNoteCount(user, regionName);
     }
 
     @Override    //폴더 내 노트목록 조회

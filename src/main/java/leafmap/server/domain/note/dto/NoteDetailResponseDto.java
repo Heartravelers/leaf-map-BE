@@ -15,12 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteDetailResponseDto {
-    //@NotNull(message = "Place info must not be null")
     private String placeId; //프론트에서 해당 플레이스 id 로 검색 후 address 등 필요 요소 있다면 반환 필요
-//    @NotNull(message = "Title must not be null")
     private String title;
     private LocalDate date;
-//    @NotNull(message = "Content must not be null")
     private String content;
     private Boolean isPublic;
     private Integer countHeart;

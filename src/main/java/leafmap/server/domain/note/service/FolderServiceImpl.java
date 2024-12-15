@@ -6,6 +6,7 @@ import leafmap.server.domain.challenge.repository.CategoryChallengeRepository;
 import leafmap.server.domain.note.dto.FolderRequestDto;
 import leafmap.server.domain.note.dto.FolderResponseDto;
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
+import leafmap.server.domain.note.dto.NoteResponseDto;
 import leafmap.server.domain.note.entity.Folder;
 import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
@@ -96,44 +97,46 @@ public class FolderServiceImpl implements FolderService {
             throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
         }
 
-        folder.update(folderRequestDto);
-
         CategoryChallenge categoryChallenge = checkService.checkCategoryChallenge(user, folder);
+
+        folder.update(folderRequestDto);
         folder.syncCategoryChallenge(categoryChallenge); // categoryChallenge 와 동기화
 
-        folderRepository.save(folder);
+        folderRepository.save(folder); //폴더와 함께 챌린지도 저장(Cascade.All)
+
+        //폴더가 비공개라면 안의 노트도 모두 비공개
+        if (folder.getIsPublic()){
+            List<Note> notes = noteRepository.findByUserAndFolder(user, folder);
+            for (Note note : notes) {
+                note.folderIsPrivate(folder);
+            }
+        }
     }
 
     @Override
-    public void deleteFolder(Long myUserId, Long folderId){  //폴더 삭제
+    public void deleteFolder(Long myUserId, List<Long> folderIds){  //폴더 삭제
         User user = checkService.checkUser(myUserId);
-        Folder folder = checkService.checkUserFolder(user, folderId);
-        if (!Objects.equals(user, folder.getUser())){
-            throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+        for (Long folderId : folderIds) { //폴더 하나씩 check 후 삭제
+            Folder folder = checkService.checkUserFolder(user, folderId);
+            if (!Objects.equals(user, folder.getUser())) {
+                throw new CustomException.ForbiddenException(ErrorCode.FORBIDDEN);
+            }
+
+            folderRepository.deleteById(folderId); //폴더와 함께 챌린지도 삭제(Cascade.All 설정)
         }
-
-        folderRepository.deleteById(folderId); //폴더와 함께 챌린지도 함께 삭제(Cascade.All 설정)
-
-        if (checkService.checkCategoryChallenge(user, folder) == null){
-            throw new CustomException.NotFoundChallengeException(ErrorCode.NOT_FOUND); //챌린지 존재하지 않음
-        }
-
-        categoryChallengeRepository.deleteById(folder.getCategoryChallenge().getId());
     }
 
     @Override
-    public List<NoteDetailResponseDto> filterNotes(Long userId, String regionName){ //지역 필터링
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()){
-            throw new CustomException.NotFoundUserException(ErrorCode.USER_NOT_FOUND);
-        }
+    public List<NoteResponseDto> filterNotes(Long userId, String regionName){ //지역 필터링(**폴더목록화면, 노트목록 화면 모두 생각해야함)
+        User user = checkService.checkUser(userId);
+        RegionFilter regionFilter = checkService.checkRegionFilterAndMakeOrReturn(user, regionName);
 
         RegionFilter regionFilter = regionFilterRepository.findByRegionName(regionName); //** 이거 갈아엎을 필요 있음,, repository 형태가..
         List<Note> notes = noteRepository.findByUserAndRegionFilter(optionalUser.get(), regionFilter);
 
         return notes.stream()
-                .map(NoteDetailResponseDto::new)
-                .collect(Collectors.toList());
+                .map(NoteResponseDto::new)
+                .collect(Collectors.toList()); //**regionFilterDto의 리스트로 반환되어야 할듯...?그리고 dto안에는 noteDto형태여야 하나..
     }
 
 }

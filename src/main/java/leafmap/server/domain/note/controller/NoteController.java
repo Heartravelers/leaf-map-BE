@@ -122,10 +122,10 @@ public class NoteController {
     })
     @DeleteMapping("/note/{noteId}")
     public ResponseEntity<ApiResponse<?>> deleteNote(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable("noteId") Long noteId) {
+                                                     @RequestParam List<Long> noteIds) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            noteService.deleteNote(userId, noteId);
+            noteService.deleteNote(userId, noteIds);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch (CustomException.NotFoundNoteException e) {   //note 존재하지 않음
@@ -149,7 +149,7 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 존재하지 않는 사용자입니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @GetMapping("/notelist/{userId}/{folderName}}")
+    @GetMapping("/notelist/{userId}/{folderName}")
     public ResponseEntity<ApiResponse<?>> getUserNoteList(@RequestHeader("Authorization") String authorization,
                                                           @PathVariable("userId") Long userId,
                                                           @PathVariable("folderName") String folderName) {

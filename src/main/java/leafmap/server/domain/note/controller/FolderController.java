@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import leafmap.server.domain.note.dto.FolderRequestDto;
 import leafmap.server.domain.note.dto.FolderResponseDto;
 import leafmap.server.domain.note.dto.NoteDetailResponseDto;
+import leafmap.server.domain.note.dto.NoteResponseDto;
 import leafmap.server.domain.note.service.FolderServiceImpl;
 import leafmap.server.global.common.ApiResponse;
 import leafmap.server.global.common.ErrorCode;
@@ -111,12 +112,12 @@ public class FolderController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 요청받은 리소스를 찾을 수 없습니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @DeleteMapping("/folder/{folderId}")
+    @DeleteMapping("/folder")
     public ResponseEntity<ApiResponse<?>> deleteFolder(@RequestHeader("Authorization") String authorization,
-                                                     @PathVariable("folderId") Long folderId) {
+                                                     @RequestParam List<Long> folderIds) {
         try {
             Long userId = Long.parseLong(authorization); // 테스트용
-            folderService.deleteFolder(userId, folderId);
+            folderService.deleteFolder(userId, folderIds);
             return ResponseEntity.ok(ApiResponse.onSuccess(SuccessCode.OK));
         }
         catch (CustomException.NotFoundFolderException e) {   //category 존재하지 않음
@@ -139,11 +140,11 @@ public class FolderController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found - 요청받은 리소스를 찾을 수 없습니다", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @GetMapping("/folder/{userId}/{regionName}")
+    @GetMapping("/folder/{userId}/{regionName}", "/notelist/{userId}/{folderName}/{regionName}")
     public ResponseEntity<ApiResponse<?>> regionFiltering(@PathVariable("userId") Long userId,
                                                   @PathVariable("regionName") String regionName){
         try{
-            List<NoteDetailResponseDto> notes = folderService.filterNotes(userId, regionName);
+            List<NoteResponseDto> notes = folderService.filterNotes(userId, regionName);
             return ResponseEntity.ok(ApiResponse.onSuccess(notes));
         }
         catch(CustomException.NotFoundUserException e){    //유저 없음

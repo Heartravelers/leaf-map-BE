@@ -15,7 +15,7 @@ public interface NoteService {
     //노트 수정
     void updateNote(Long myUserId, Long noteId, NoteRequestDto noteRequestDto, List<MultipartFile> imageFiles);
     //노트 삭제
-    void deleteNote(Long myUserId, Long noteId);
+    void deleteNote(Long myUserId, List<Long> noteIds);
     //폴더 내 노트목록 조회(본인, 타사용자)
     List<NoteResponseDto> getList(Long myUserId, Long userId, String folderName);
 }

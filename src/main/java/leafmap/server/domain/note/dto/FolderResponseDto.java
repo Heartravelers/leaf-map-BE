@@ -11,11 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FolderResponseDto {
-    //@NotNull(message = "Category name must not be null")
     private String name;
-    //@NotNull(message = "Category color must not be null")
     private String color;
-    //@NotNull(message = "IsDefault must not be null")
     private Boolean isPublic;
 
 

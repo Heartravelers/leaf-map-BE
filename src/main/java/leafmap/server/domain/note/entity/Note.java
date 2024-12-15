@@ -77,9 +77,13 @@ public class Note extends BaseEntity {
         this.countHeart--;
     }
 
-    public void update(NoteRequestDto noteRequestDto){
+    public void update(NoteRequestDto noteRequestDto){ //노트 수정 시 사용
         this.title = noteRequestDto.getTitle();
         this.content = noteRequestDto.getContent();
-        this.isPublic = noteRequestDto.getIsPublic(); //**폴더 연결도 해줘야 함.. 파라미터로 넘기자
+        this.isPublic = noteRequestDto.getIsPublic();
+    }
+
+    public void folderIsPrivate(Folder folder){ //폴더 비공개 시 안의 노트 모두 비공개로 전환
+        this.isPublic = folder.getIsPublic();
     }
 }
