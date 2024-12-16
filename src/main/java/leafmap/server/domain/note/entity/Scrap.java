@@ -1,9 +1,9 @@
 package leafmap.server.domain.note.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import leafmap.server.domain.place.entity.Place;
 import leafmap.server.domain.user.entity.User;
 import lombok.*;
+
 @Entity
 @Builder
 @Getter
