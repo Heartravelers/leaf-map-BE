@@ -49,6 +49,40 @@ public class MyPageServiceImpl implements MyPageService {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()) {
             User user = userOptional.get();
+
+            String url = null;
+            if(file != null && !file.isEmpty()){
+                url = s3Provider.uploadFile(file, new S3UploadRequest(userId, DIR_NAME));
+                if(user.getProfilePicture() != null) {
+                    s3Provider.removeFile(user.getProfilePicture(), DIR_NAME);
+                }
+            }
+
+            user.update(profileRequestDto, url);
+            userRepository.save(user);
+
+            /*
+            String username = user.getUsername();
+            String bio = user.getBio();
+            boolean isPublic = user.isPublic();
+            String profilePicture = user.getProfilePicture();
+
+            if(profileRequestDto != null) {
+                if(profileRequestDto.getUsername() != null)
+                    username = profileRequestDto.getUsername();
+                if(profileRequestDto.getBio() != null)
+                    bio = profileRequestDto.getBio();
+                if(profileRequestDto.getIsPublic() != null)
+                    isPublic = profileRequestDto.getIsPublic();
+            }
+
+            if(file != null && !file.isEmpty()){
+                profilePicture = s3Provider.uploadFile(file, new S3UploadRequest(userId, DIR_NAME));
+                if(user.getProfilePicture() != null) {
+                    s3Provider.removeFile(user.getProfilePicture(), DIR_NAME);
+                }
+            }
+
             if(profileRequestDto != null) {
                 if(profileRequestDto.getUsername() != null)
                     user.setUsername(profileRequestDto.getUsername());
@@ -64,7 +98,27 @@ public class MyPageServiceImpl implements MyPageService {
                 }
                 user.setProfilePicture(url);
             }
-            userRepository.save(user);
+
+            userRepository.save(User.builder()
+                    .id(user.getId())
+                    .username(username)
+                    .email(user.getEmail())
+                    .provider(user.getProvider())
+                    .providerId(user.getProviderId())
+                    .refreshToken(user.getRefreshToken())
+                    .role(user.getRole())
+                    .profilePicture(profilePicture)
+                    .bio(bio)
+                    .isPublic(isPublic)
+                    .notes(user.getNotes())
+                    .scraps(user.getScraps())
+                    .inquiries(user.getInquiries())
+                    .challenge(user.getChallenge())
+                    .regionFilters(user.getRegionFilters())
+                    .folders(user.getFolders())
+                    .followings(user.getFollowings())
+                    .build());
+            */
             return;
         }
         throw new CustomException(ErrorCode.USER_NOT_FOUND);
@@ -77,8 +131,27 @@ public class MyPageServiceImpl implements MyPageService {
             User user = userOptional.get();
             if(user.getProfilePicture() != null) {
                 s3Provider.removeFile(user.getProfilePicture(), DIR_NAME);
-                user.setProfilePicture(null);
-                userRepository.save(user);
+                //user.setProfilePicture(null);
+                //userRepository.save(user);
+                userRepository.save(userRepository.save(User.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .provider(user.getProvider())
+                        .providerId(user.getProviderId())
+                        .refreshToken(user.getRefreshToken())
+                        .role(user.getRole())
+                        .profilePicture(null)
+                        .bio(user.getBio())
+                        .isPublic(user.isPublic())
+                        .notes(user.getNotes())
+                        .scraps(user.getScraps())
+                        .inquiries(user.getInquiries())
+                        .challenge(user.getChallenge())
+                        .regionFilters(user.getRegionFilters())
+                        .folders(user.getFolders())
+                        .followings(user.getFollowings())
+                        .build()));
             }
             return;
         }

@@ -1,6 +1,5 @@
 package leafmap.server.domain.qna.dto;
 
-import leafmap.server.domain.qna.entity.Answer;
 import leafmap.server.domain.qna.entity.Inquiry;
 import lombok.Getter;
 

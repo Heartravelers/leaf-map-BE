@@ -9,6 +9,7 @@ import leafmap.server.domain.note.entity.Note;
 import leafmap.server.domain.note.entity.RegionFilter;
 import leafmap.server.domain.note.entity.Scrap;
 import leafmap.server.domain.qna.entity.Inquiry;
+import leafmap.server.domain.user.dto.ProfileRequestDto;
 import leafmap.server.global.common.BaseEntity;
 import leafmap.server.global.oauth2.user.OAuth2Provider;
 import lombok.*;
@@ -29,7 +30,6 @@ public class User extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long id;
 
-    @Setter
     @Column(name = "username")
     private String username;
 
@@ -50,15 +50,12 @@ public class User extends BaseEntity {
     @Column(name = "role")
     private Role role;
 
-    @Setter
     @Column(name = "profile_picture")
     private String profilePicture;
 
-    @Setter
     @Column(name = "bio")
     private String bio;
 
-    @Setter
     @Column(name = "is_public")
     private boolean isPublic;
 
@@ -87,4 +84,21 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();
+
+    public void update(ProfileRequestDto profileRequestDto, String url) {
+
+        if(profileRequestDto != null) {
+            if(profileRequestDto.getUsername() != null)
+                this.username = profileRequestDto.getUsername();
+            if(profileRequestDto.getBio() != null)
+                this.bio = profileRequestDto.getBio();
+            if(profileRequestDto.getIsPublic() != null)
+                this.isPublic = profileRequestDto.getIsPublic();
+        }
+
+        if(url != null) {
+            this.profilePicture = url;
+        }
+
+    }
 }
