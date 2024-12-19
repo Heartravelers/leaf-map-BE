@@ -11,7 +11,7 @@ public class PlaceDetailResponseDto {
 
     private String name;
 
-    private String category;
+    private List<String> categories;
 
     private String address;
 
@@ -21,7 +21,8 @@ public class PlaceDetailResponseDto {
 
     public PlaceDetailResponseDto(GooglePlace googlePlace, List<Note> notes) {
         this.name = googlePlace.getDisplayName().getText();
-        this.category = googlePlace.getPrimaryType();
+        //this.category = googlePlace.getPrimaryType();
+        this.categories = googlePlace.getTypes();
         this.address = googlePlace.getFormattedAddress();
         if(googlePlace.getPhotos() != null && !googlePlace.getPhotos().isEmpty()) {
             this.image = googlePlace.getPhotos().get(0).getGoogleMapsUri();

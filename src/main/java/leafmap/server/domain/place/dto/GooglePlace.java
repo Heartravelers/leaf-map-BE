@@ -2,6 +2,7 @@ package leafmap.server.domain.place.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -17,7 +18,10 @@ public class GooglePlace {
 
     private displayName displayName;
 
-    private String primaryType;
+    //private String primaryType;
+
+    @Setter
+    private List<String> types;
 
     private List<GooglePhoto> photos;
 
