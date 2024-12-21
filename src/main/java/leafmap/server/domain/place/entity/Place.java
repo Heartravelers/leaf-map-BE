@@ -21,21 +21,8 @@ public class Place extends BaseEntity {
     @Column(name = "place_id", nullable = false)
     private String id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private Category category;
-
     @Column(name = "address")
     private String address;
-
-    @Column(name = "image")
-    private String image;
-
-    @Column(name = "region_name")
-    private String regionName;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
