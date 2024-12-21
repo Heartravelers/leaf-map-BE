@@ -89,9 +89,10 @@ public class NoteServiceImpl implements NoteService{
 
         Optional<Place> optionalPlace = placeRepository.findById(noteDto.getPlaceId());
         if (optionalPlace.isEmpty()){
-            Place place = Place.builder()
-                    .id(noteDto.getPlaceId())
-                    .regionName(regionName).build();
+            Place place = Place.builder().id(noteDto.getPlaceId()).build();
+//                    Place.builder()
+//                    .id(noteDto.getPlaceId())
+//                    .regionName(regionName).build();
             placeRepository.save(place);
         }
 
