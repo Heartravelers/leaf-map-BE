@@ -6,9 +6,6 @@ import leafmap.server.domain.user.entity.User;
 import leafmap.server.global.common.BaseEntity;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Builder
 @Getter
@@ -22,11 +19,9 @@ public class Inquiry extends BaseEntity {
     @Column(name = "inquiry_id", nullable = false)
     private Long id;
 
-    @Setter
     @Column(name = "inquiry_title")
     private String inquiryTitle;
 
-    @Setter
     @Column(name = "inquiry_text", columnDefinition = "text")
     private String inquiryText;
 
@@ -34,7 +29,6 @@ public class Inquiry extends BaseEntity {
     @Column(name = "status")
     private InquiryStatus status;
 
-    @Setter
     @Column(name = "email")
     private String email;
 
@@ -53,4 +47,38 @@ public class Inquiry extends BaseEntity {
         this.email = inquiryRequestDto.getEmail();
         this.user = user;
     }
+
+    public void update(InquiryRequestDto inquiryRequestDto) {
+        if(inquiryRequestDto.getInquiryTitle() != null)
+            this.inquiryTitle = inquiryRequestDto.getInquiryTitle();
+        if(inquiryRequestDto.getInquiryText() != null)
+            this.inquiryText = inquiryRequestDto.getInquiryText();
+        if(inquiryRequestDto.getEmail() != null)
+            this.email = inquiryRequestDto.getEmail();
+    }
+
+    /*
+    public Inquiry update(InquiryRequestDto inquiryRequestDto) {
+        String inquiryTitle = this.inquiryTitle;
+        String inquiryText = this.inquiryText;
+        String email = this.email;
+        if(inquiryRequestDto.getInquiryTitle() != null)
+            this.inquiryTitle = inquiryRequestDto.getInquiryTitle();
+        if(inquiryRequestDto.getInquiryText() != null)
+            this.inquiryText = inquiryRequestDto.getInquiryText();
+        if(inquiryRequestDto.getEmail() != null)
+            this.email = inquiryRequestDto.getEmail();
+        return Inquiry.builder()
+                .id(this.id)
+                .inquiryTitle(inquiryTitle)
+                .inquiryText(inquiryText)
+                .status(this.status)
+                .email(email)
+                .user(this.user)
+                .answer(this.answer)
+                .build();
+    }
+
+     */
+
 }
